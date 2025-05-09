@@ -4,3 +4,4 @@ pandas==2.2.3
 streamlined-custom-component==1.0  # used for prototyping only
 streamlit==1.44.1
 st-gsheets-connection==0.1.0
+tqdm==4.67.1
