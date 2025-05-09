@@ -1,0 +1,58 @@
+# non-project files to ignore
+*.bat
+*.ipynb
+*.jpg
+*.log
+*.p
+*.pdf
+*.png
+*.pptx
+*.pyc
+*.pylintrc
+*.tmp
+*.txt
+*.xlsx
+tmp*.*
+*.old*
+*~*
+*.sav*
+*.zip
+Thumbs.db
+
+# config files (may have sensitive data)
+*.ini
+
+# env and streamlit secrets
+.env
+.streamlit
+
+# jupyter checkpoint files
+.ipynb_checkpoints/
+
+# data tools, intermediate files
+data_tools/*/*duplicates*.csv
+data_tools/*/*saved*.csv
+
+# IDE, pycharm
+.idea/
+/.idea
+
+# prototypes
+proto_app.py
+proto_pages/
+assets/
+
+# archive and tmp folder files
+archive*/
+snapshot*/
+tmp*/
+*/tmp*.*
+*/tmp*/
+
+# mypy
+.mypy_cache
+
+# override
+!requirements.txt
+
+

@@ -1,0 +1,11 @@
+# French phrases mapped to English phrases
+# Testing - all words should fail translation checks
+# Author: @TerryDolan
+# Last Updated: 18th March 2025
+
+>French: English
+bonjour: fish # phrase, incorrect target: fail
+chat (f): cat # noun + incorrect gender, correct target: fail
+chat (m): dog # noun + correct gender, inorrect target: fail
+not_in_dict (m): fish # noun, not in dictionary: fail
+voyager (m): to travel # verb with gender, gender not found: fail

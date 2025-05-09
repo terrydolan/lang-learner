@@ -1,0 +1,11 @@
+# French phrases mapped to English phrases
+# Testing - all words should pass translation checks
+# Author: @TerryDolan
+# Last Updated: 21st March 2025
+
+>French: English
+d’accord: all right, ok # phrase: pass
+femme (f): woman, wife # + feminine gender: pass # ignore translation error
+homme (m): man # noun + male gender: pass
+n’importe où: anywhere # phrase: pass
+voyager: to travel # verb: pass

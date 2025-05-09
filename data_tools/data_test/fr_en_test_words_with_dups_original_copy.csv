@@ -1,0 +1,19 @@
+# French phrases mapped to English phrases
+# Testing - includes duplicates in original 
+#
+# Author: @TerryDolan
+# Last Updated: 27th March 2025
+
+>French: English
+Homme (m): man # DUPLICATED +2
+Homme (m): man # DUPLICATED +2
+Femme (f): woman, wife # ignore translation error
+D’accord: all right, ok
+N’importe où: anywhere # DUPLICATED +1
+Zoo (m): zoo
+Voyager: to travel
+Voyager: to travel (plus example so *NOT A DUPLICATE*)
+Chien (m): dog
+N’importe où: anywhere # DUPLICATED +1
+Homme (m): man # DUPLICATED +2
+Étre: to be

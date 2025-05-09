@@ -1,0 +1,145 @@
+<! =======================================================
+Module: uils/index.html
+
+HTML for a simple countdown timer provided by st_countdown.
+
+Note that Streamlit expects component html file to be called index.html.
+
+References:
+- initial template with Streamlit API functions:
+https://github.com/alexgain/streamlined_custom_component
+- streamlit component template:
+https://github.com/streamlit/component-template/tree/master
+- initial javascript for countdown:
+https://codepen.io/gulzaib/pen/PoKVmNw
+
+======================================================= -->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+<style>
+    #countdown {
+        font-size: 26px;
+        font-weight: bold;
+        border-radius: 15px;
+        background: #f1f1f1;
+        padding: 5px;
+        box-shadow: 3px 3px 3px 1px #909090;
+        text-align: center;
+        display: inline-block;
+        width: 92px;
+        height: 30px;
+    }
+</style>
+</head>
+
+<body>
+    <span id="countdown"></span>
+
+    <script type="text/javascript">
+        var streamlitRenderCount = 0;  // count of Streamlit render events
+        var countdownFrom; // input value received from Streamlit, countdown from this value in seconds
+        var countdownDisplay = document.getElementById("countdown"); // html body element that receives the countdown
+        var secs; // countdown in seconds
+        var ticker; // ticker object to countdown in seconds
+
+        function sendMessageToStreamlitClient(type, data) {
+          var outData = Object.assign({
+            isStreamlitMessage: true,
+            type: type,
+          }, data);
+          window.parent.postMessage(outData, "*");
+        }
+
+        function init() {
+          sendMessageToStreamlitClient("streamlit:componentReady", {apiVersion: 1});
+        }
+
+        function setFrameHeight(height) {
+          sendMessageToStreamlitClient("streamlit:setFrameHeight", {height: height});
+        }
+
+        function sendDataToPython(data) {
+          sendMessageToStreamlitClient("streamlit:setComponentValue", data);
+        }
+
+        window.addEventListener("message", onDataFromPython);
+        init();
+
+        window.addEventListener("load", function() {
+          window.setTimeout(function() {
+            setFrameHeight(document.documentElement.clientHeight)
+          }, 0);
+        });
+
+        setFrameHeight(0);
+
+        document.addEventListener("updateStreamlit", function(e) {
+          console.log("document.addEventListener('updateStreamlit', function(e)) with e.detail.counter: ", e.detail.counter);
+          sendDataToPython({
+            value: e.detail.counter,
+            dataType: "json",
+          });
+        })
+
+        function startTimer(countdownFrom) {
+            console.log("startTimer(countdownFrom): countdownFrom is:", countdownFrom);
+            ticker = setInterval("tick()", 1000);
+        }
+
+        function tick() {
+            secs = countdownFrom; // countdown in seconds
+            console.log("tick(): secs: ", secs);
+
+            // prettify count in seconds for display in countdownDisplay
+            // show countdoen in form 'mm:ss'
+            var mins = Math.floor(secs/60); // minutes remaining
+            var secs_rem = secs % 60; // seconds remaining
+            var prettyCount = ( (mins < 10) ? "0" : "" ) + mins + ":" + ( (secs_rem < 10) ? "0" : "" ) + secs_rem;
+            console.log("prettyCount: ", prettyCount)
+            countdownDisplay.innerHTML = prettyCount;
+
+            // create custom event to update Streamlit
+            var updateStreamlit = new CustomEvent("updateStreamlit", {
+                  "detail": {"counter": secs}
+            });
+
+            // update Streamlit with the countdown timer's secs remaining and log
+            document.dispatchEvent(updateStreamlit);
+
+            // change text colour as we get closer to end of countdown
+            if (secs > 20 && secs <= 60) {
+              countdownDisplay.style.color = "orange";
+            } else if (secs <= 20) {
+              countdownDisplay.style.color = "red";
+            }
+
+            if (secs > 0) {
+                countdownFrom--;
+            }
+            else {
+                countdownDisplay.style.color = "darkgray";
+                console.log("completed ticker: call clearInterval(ticker)");
+                clearInterval(ticker);
+            }
+        }
+
+        // handle streamlit:render onDataFromPython event listener
+        function onDataFromPython(event) {
+            if (event.data.type !== "streamlit:render") return;
+            streamlitRenderCount++;
+            console.log("onDataFromPython(event): streamlit render count: ", streamlitRenderCount);
+            console.log("onDataFromPython(event): args from streamlit", event.data.args);
+
+            // start the timer if it's the first Streamlit render
+            if (streamlitRenderCount == 1) {
+                console.log("startTimer on first Streamlit render, streamlitRenderCount: ", streamlitRenderCount);
+                // read countdownFrom value from Streamlit
+                countdownFrom = parseInt(event.data.args.countdown_from);
+                console.log("startTimer on first Streamlit render, countdownFrom: ", countdownFrom);
+                startTimer(countdownFrom);
+            }
+        }
+    </script>
+</body>
+</html>
