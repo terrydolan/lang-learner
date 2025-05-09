@@ -32,7 +32,7 @@ restarted on switch back
 - The user is given the option of trying again or jumping to the scores page
 - The user can also review their misses
 
-ToDo / Nice-to-have
+ToDo / Nice-to-have:
 - add info that explains the word match miniapp
 - set a temporary highlight colour or a glow when there is a successful or
 unsuccessful word match e.g. green for hit and red for miss
@@ -50,12 +50,12 @@ from dataclasses import dataclass
 from random import shuffle
 import pandas as pd
 import streamlit as st
-import data_tools.scripts.check_df_translation as chk_trans
 import utils.config as config
 
 from utils.gsheet_utils import save_score_to_gsheet
 from utils.st_countdown import st_countdown
 from utils.gsheet_utils import read_scores_as_df_from_gsheet
+from data_tools.data_utils.data_schema import load_report_data_df_from_feather
 
 # setup logger
 logger = logging.getLogger(__name__)
@@ -257,7 +257,7 @@ def get_shuffled_word_pairs(source_language, target_language):
     # load the French English all words translation report feather file into a pandas dataframe
     word_match_all_words_file = config.lang_pair_to_all_words[(source_language, target_language)]
     logger.debug(f"{word_match_all_words_file=}")
-    dfrpt_all = chk_trans.load_report_data_df_from_feather(word_match_all_words_file)
+    dfrpt_all = load_report_data_df_from_feather(word_match_all_words_file)
 
     # create a shuffled list of target words mapped to source words,
     # the target language (e.g. English) is left, source language (e.g. French) is right

@@ -1,6 +1,9 @@
 """
 Module: scores.py
 Description: Contains logic for the Scores miniapp page.
+
+ToDo:
+- remove miniapp filter if only one value
 """
 import logging
 import streamlit as st
@@ -13,7 +16,10 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.WARNING)
 
 # define constants
-MINIAPPS_WITH_SCORES = ['word_match', 'gender_match', 'other']
+if st.session_state.user_id in st.secrets.admin.admin_user_ids:
+    MINIAPPS_WITH_SCORES = ['word_match', 'gender_match', 'other']
+else:
+    MINIAPPS_WITH_SCORES = ['word_match']
 
 
 # cache data for 1 minutes
