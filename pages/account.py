@@ -5,12 +5,17 @@ change_nickname, remove_user and logout.
 """
 import logging
 import streamlit as st
-
+from pathlib import Path
 from utils.gsheet_utils import (load_nicknames_dict_from_gsheet, save_nickname_to_gsheet,
                                 read_nicknames_as_df_from_gsheet, save_nicknames_df_to_gsheet)
+
 # setup logger
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.WARNING)
+this_file_stem = Path(__file__).stem
+if this_file_stem in st.secrets.set_log_level:
+    logger.setLevel(st.secrets.set_log_level[this_file_stem])
+else:
+    logger.setLevel(logging.WARNING)
 
 # ------------------------------------------------------------------------------
 # Account login page functions

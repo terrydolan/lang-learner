@@ -4,7 +4,7 @@ Description: Main entry point for streamlit language learner app.
 
 Author: Terry Dolan
 Date Created: 31st March 2025
-Date Last Modified: 6th May 2025
+Date Last Modified: 12th May 2025
 
 ToDo:
 - Replace Google Sheets with simple cloud database (e.g. MongoDB) allowing insertion and
@@ -19,14 +19,18 @@ Use lazy % formatting in logging functions (...) [logging-fstring-interpolation]
 """
 import logging
 import streamlit as st
-
+from pathlib import Path
 from pages.account import login, change_nickname, remove_user, logout
 
 # setup logger
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(levelname)s %(module)s %(funcName)s %(message)s')
 # preferred format for print statements for DEBUG datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-logger.setLevel(logging.WARNING)
+this_file_stem = Path(__file__).stem
+if this_file_stem in st.secrets.set_log_level:
+    logger.setLevel(st.secrets.set_log_level[this_file_stem])
+else:
+    logger.setLevel(logging.WARNING)
 
 # ------------------------------------------------------------------------------
 # functions
@@ -90,6 +94,9 @@ def main():
         gender_match_page = st.Page(
             "pages/gender_match.py",
             title="Gender Match", icon=":material/group:")
+        prototype_page = st.Page(
+            "pages/prototype.py",
+            title="Prototype", icon=":material/group:")
 
         # mini-app pages
         word_match_page = st.Page(
@@ -106,7 +113,7 @@ def main():
                 {
                     "Account": [change_nickname_page, remove_user_page, logout_page],
                     "Admin": [admin_enter_scores, admin_display_nicknames, admin_display_scores],
-                    "In-development": [gender_match_page],
+                    "In-development": [gender_match_page, prototype_page],
                     "Mini-apps": [word_match_page, scores_page]
                 }
             )

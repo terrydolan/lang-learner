@@ -142,3 +142,29 @@ def validate_report_dataframe_schema(df: pd.DataFrame):
         TypeError: If DataFrame data types do not match ValidationReportDataSchema.
     """
     validate_dataframe_schema(df, ValidationReportDataSchema)
+
+
+def load_report_data_df_from_feather(feather_filepath: str) -> ValidationReportDataFrameType:
+    """Loads the report dataframe from a Feather file and validates its schema.
+
+    Args:
+        feather_filepath (str): Path to the Feather file.
+
+    Returns:
+        ReportDataFrameType: The loaded report data dataframe.
+
+    Raises:
+        FileNotFoundError: If the Feather file is not found.
+        RuntimeError: If there is an error reading the Feather file.
+        TypeError: If the loaded DataFrame does not conform to ValidationReportDataSchema.
+    """
+    try:
+        df = pd.read_feather(feather_filepath)
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Feather file not found at {feather_filepath}")
+    except Exception as e:
+        raise RuntimeError(f"Error reading Feather file: {e}")
+
+    validate_report_dataframe_schema(df)
+
+    return df  # type: ValidationReportDataSchema

@@ -8,11 +8,17 @@ ToDo:
 """
 import logging
 import os
+import streamlit as st
 import streamlit.components.v1 as components
+from pathlib import Path
 
 # setup logger
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.WARNING)
+this_file_stem = Path(__file__).stem
+if this_file_stem in st.secrets.set_log_level:
+    logger.setLevel(st.secrets.set_log_level[this_file_stem])
+else:
+    logger.setLevel(logging.WARNING)
 
 # determine component's directory path
 component_dir = os.path.dirname(__file__)

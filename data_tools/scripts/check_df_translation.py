@@ -26,9 +26,9 @@ import data_tools.data_utils.data_config as data_config
 
 from tqdm import tqdm
 from typing import List
-from data_tools.data_utils.data_schema import (ValidationReportDataFrameType,
-                                               ValidationReportDataSchema,
-                                               validate_report_dataframe_schema)
+from data_tools.data_utils.data_schema import (ValidationReportDataSchema,
+                                               validate_report_dataframe_schema,
+                                               load_report_data_df_from_feather)
 from data_tools.data_utils.translation import TranslationCheckerFactory
 from data_tools.scripts.convert_lang_csv_to_df import \
     load_language_data_df_from_feather
@@ -105,32 +105,6 @@ def analyse_errors(translation_error, fuzzy_ratio,
         'review_reason': '; '.join(review_reason),  # convert list to ; separated string
         'review_detail': '; '.join(review_detail)  # convert list to ; separated string
     }
-
-
-def load_report_data_df_from_feather(feather_filepath: str) -> ValidationReportDataFrameType:
-    """Loads the report dataframe from a Feather file and validates its schema.
-
-    Args:
-        feather_filepath (str): Path to the Feather file.
-
-    Returns:
-        ReportDataFrameType: The loaded report data dataframe.
-
-    Raises:
-        FileNotFoundError: If the Feather file is not found.
-        RuntimeError: If there is an error reading the Feather file.
-        TypeError: If the loaded DataFrame does not conform to ValidationReportDataSchema.
-    """
-    try:
-        df = pd.read_feather(feather_filepath)
-    except FileNotFoundError:
-        raise FileNotFoundError(f"Feather file not found at {feather_filepath}")
-    except Exception as e:
-        raise RuntimeError(f"Error reading Feather file: {e}")
-
-    validate_report_dataframe_schema(df)
-
-    return df  # type: ValidationReportDataSchema
 
 
 def main(language_feather_filepath='language_words.fea',

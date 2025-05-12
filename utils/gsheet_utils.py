@@ -5,12 +5,16 @@ Description: Contains utilities handling interface to Google sheet files.
 import logging
 import pandas as pd
 import streamlit as st
-
+from pathlib import Path
 from streamlit_gsheets import GSheetsConnection
 
 # setup logger
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.WARNING)
+this_file_stem = Path(__file__).stem
+if this_file_stem in st.secrets.set_log_level:
+    logger.setLevel(st.secrets.set_log_level[this_file_stem])
+else:
+    logger.setLevel(logging.WARNING)
 
 # ------------------------------------------------------------------------------
 # Functions related to nickname gsheet

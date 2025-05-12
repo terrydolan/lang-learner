@@ -32,7 +32,7 @@ restarted on switch back
 - The user is given the option of trying again or jumping to the scores page
 - The user can also review their misses
 
-ToDo / Nice-to-have
+ToDo / Nice-to-have:
 - add info that explains the word match miniapp
 - set a temporary highlight colour or a glow when there is a successful or
 unsuccessful word match e.g. green for hit and red for miss
@@ -46,20 +46,24 @@ practice app
 """
 import logging
 import os
-from dataclasses import dataclass
-from random import shuffle
 import pandas as pd
 import streamlit as st
-import data_tools.scripts.check_df_translation as chk_trans
 import utils.config as config
-
+from dataclasses import dataclass
+from random import shuffle
+from pathlib import Path
 from utils.gsheet_utils import save_score_to_gsheet
 from utils.st_countdown import st_countdown
 from utils.gsheet_utils import read_scores_as_df_from_gsheet
+from data_tools.data_utils.data_schema import load_report_data_df_from_feather
 
 # setup logger
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.WARNING)
+this_file_stem = Path(__file__).stem
+if this_file_stem in st.secrets.set_log_level:
+    logger.setLevel(st.secrets.set_log_level[this_file_stem])
+else:
+    logger.setLevel(logging.WARNING)
 
 # define global constants to control dynamic behaviour
 COUNTDOWN_FROM = 120  # total seconds to countdown from to match word pairs
@@ -240,7 +244,7 @@ class ClickedButton:
 # ------------------------------------------------------------------------------
 
 
-@st.cache_data  # cached, run expensive operation once at start
+
 def get_shuffled_word_pairs(source_language, target_language):
     """Return shuffled word pairs as list of lists for the given source and target languages.
     Inputs:
@@ -257,7 +261,7 @@ def get_shuffled_word_pairs(source_language, target_language):
     # load the French English all words translation report feather file into a pandas dataframe
     word_match_all_words_file = config.lang_pair_to_all_words[(source_language, target_language)]
     logger.debug(f"{word_match_all_words_file=}")
-    dfrpt_all = chk_trans.load_report_data_df_from_feather(word_match_all_words_file)
+    dfrpt_all = load_report_data_df_from_feather(word_match_all_words_file)
 
     # create a shuffled list of target words mapped to source words,
     # the target language (e.g. English) is left, source language (e.g. French) is right
@@ -625,7 +629,6 @@ def display_misses(source_lang, target_lang, word_pair_mismatch, miss_list):
             f"the {target_lang} word '{sel_correct_lword}'.")
 
 
-@st.cache_data(show_spinner="Reading your high score...")
 def get_high_score(user_id, miniapp):
     """Return the user's best scores for the given miniapp.
 
@@ -664,7 +667,8 @@ def main():
     st.subheader(f"Match the {target_language} and {source_language} words")
 
     # get the list of all the word pairs, shuffled, for the selected source and target language
-    word_pairs_shuffled = get_shuffled_word_pairs(source_language, target_language)
+    if "word_pairs_shuffled" not in st.session_state:
+        st.session_state.word_pairs_shuffled = get_shuffled_word_pairs(source_language, target_language)
 
     # get user's high score for word match
     if "high_score" not in st.session_state:
@@ -681,21 +685,19 @@ def main():
     # wait until the user clicks the start button
     if not st.session_state.started:
         # not started, warn the user about the countdown
-        # prepare the columns for the warning message
-        col_warn, _col_warn2 = st.columns([0.4, 0.6])
-        with col_warn:
-            if not DEBUG_NO_COUNTDOWN:
-                st.warning(f"You have {friendly_secs(COUNTDOWN_FROM)} from the button click, good luck!",
-                           icon=":material/warning:")
-                if st.session_state.high_score is not None:
-                    st.info(f"Your Word Match high score is {st.session_state.high_score}", icon=":material/info:")
-                button_start_label = "Click to start the countdown timer"
-            else:
-                # countdown disabled (debug mode)
-                st.write(f"No timer, word match will stop after {DEBUG_NO_COUNTDOWN_PAGE_LIMIT} pages (debug mode)")
-                if st.session_state.high_score is not None:
-                    st.info(f"Your Word Match high score is {st.session_state.high_score}", icon=":material/info:")
-                button_start_label = "Click to start (debug mode)"
+        if not DEBUG_NO_COUNTDOWN:
+            st.warning(f"You have {friendly_secs(COUNTDOWN_FROM)} from the button click, good luck!",
+                       icon=":material/warning:")
+            if st.session_state.high_score is not None:
+                st.info(f"Your Word Match high score is {st.session_state.high_score}", icon=":material/info:")
+            button_start_label = "Click to start the countdown timer"
+        else:
+            # countdown disabled (debug mode)
+            st.write(f"No timer, word match will stop after {DEBUG_NO_COUNTDOWN_PAGE_LIMIT} pages (debug mode)")
+            if st.session_state.high_score is not None:
+                st.info(f"Your Word Match high score is {st.session_state.high_score}", icon=":material/info:")
+            button_start_label = "Click to start (debug mode)"
+
         logger.debug("wait for start button!")
         if st.button(button_start_label, icon=":material/timer:",):
             # start!
@@ -708,14 +710,8 @@ def main():
 
         # prepare columns to display progress
         # the metrics will be in cols 1 and 2; the countdown timer will be in col4
-        col1, col2, _col3, col4 = st.columns([0.1, 0.1, 0.68, 0.12], vertical_alignment="bottom")
+        col1, col2, col3 = st.columns(3, vertical_alignment="bottom")
         with col1:
-            # display hit metric
-            st.metric(label=ICON_HIT+"Hit", value=st.session_state.word_pair_match)
-        with col2:
-            # display miss metric
-            st.metric(label=ICON_MISS+"Miss", value=st.session_state.word_pair_mismatch)
-        with col4:
             # run the st_countdown timer and read the seconds remaining
             # hide the running man as this can be distracting when updated every countdown tick
             st.markdown(HIDE_STREAMLIT_STATUS, unsafe_allow_html=True)
@@ -732,6 +728,13 @@ def main():
             # ignored if the st_countdown iframe javascript context is not restarted)
             # ToDo: monitor impact on performance
             st.session_state.countdown_from = seconds_remaining
+        with col2:
+            # display hit metric
+            st.metric(label=ICON_HIT+"Hit", value=st.session_state.word_pair_match)
+        with col3:
+            # display miss metric
+            st.metric(label=ICON_MISS+"Miss", value=st.session_state.word_pair_mismatch)
+
         logger.debug(f"progress metrics: {seconds_remaining=}, {st.session_state.word_pair_match=}, "
                      f"{st.session_state.word_pair_mismatch=}")
 
@@ -742,7 +745,7 @@ def main():
         # get a page slice (of size ROW_TOT) of left and right words, and a shuffle of those right words
         # the right words are shuffled using the page_indices_shuffled map
         words_left_page, words_right_page, words_right_page_shuffled, page_indices_shuffled = (
-            get_page_of_word_pairs(word_pairs=word_pairs_shuffled,
+            get_page_of_word_pairs(word_pairs=st.session_state.word_pairs_shuffled,
                                    pg_start_index=words_index_start,
                                    pg_words_tot=ROW_TOT))
         logger.debug(f"{words_left_page=}")
@@ -823,29 +826,26 @@ def main():
                 st.rerun()
 
             # notify the user of completion
-            # prepare the columns for the info message
-            col_info, _col_info2 = st.columns([0.60, 0.40])
-            with (col_info):
-                st.info(f"Word match complete! You scored {st.session_state.word_pair_match} hits and "
-                        f"{st.session_state.word_pair_mismatch} misses", icon=":material/info:")
-                logger.debug(f"Word match complete! {st.session_state.word_pair_match=}, "
-                             f"{st.session_state.word_pair_mismatch=}, {st.session_state.high_score=}")
-                # check high score
-                if not st.session_state.high_score_checked:
-                    if st.session_state.high_score is None:
-                        # no score saved yet, so this becomes high score
-                        st.session_state.high_score = st.session_state.word_pair_match
-                        logger.debug("high score is None,so high score updated with new score")
-                    elif st.session_state.word_pair_match == st.session_state.high_score:
-                        st.info("You equaled your Word Match high score!", icon=":material/star_half:")
-                        logger.debug("You equaled your Word Match high score!")
-                    elif st.session_state.word_pair_match > st.session_state.high_score:
-                        st.info("You achieved a new Word Match high score! Check the *Scores* page "
-                                "to see your position in the table",
-                                icon=":material/star:")
-                        st.session_state.high_score = st.session_state.word_pair_match
-                        logger.debug("You equaled your Word Match high score! (high score updated with new score)")
-                    st.session_state.high_score_checked = True
+            st.info(f"Word match complete! You scored {st.session_state.word_pair_match} hits and "
+                    f"{st.session_state.word_pair_mismatch} misses", icon=":material/info:")
+            logger.debug(f"Word match complete! {st.session_state.word_pair_match=}, "
+                         f"{st.session_state.word_pair_mismatch=}, {st.session_state.high_score=}")
+            # check high score
+            if not st.session_state.high_score_checked:
+                if st.session_state.high_score is None:
+                    # no score saved yet, so this becomes high score
+                    st.session_state.high_score = st.session_state.word_pair_match
+                    logger.debug("high score is None,so high score updated with new score")
+                elif st.session_state.word_pair_match == st.session_state.high_score:
+                    st.info("You equaled your Word Match high score!", icon=":material/star_half:")
+                    logger.debug("You equaled your Word Match high score!")
+                elif st.session_state.word_pair_match > st.session_state.high_score:
+                    st.info("You achieved a new Word Match high score! Check the *Scores* page "
+                            "to see your position in the table",
+                            icon=":material/star:")
+                    st.session_state.high_score = st.session_state.word_pair_match
+                    logger.debug("You equaled your Word Match high score! (high score updated with new score)")
+                st.session_state.high_score_checked = True
 
             # log the number of word pair matches (hits) to scores
             if not DEBUG_NO_LOG_SCORES and not st.session_state.scores_logged:
@@ -868,7 +868,7 @@ def main():
                     st.stop()
 
             # give the user the option to try again or see the latest scores
-            opt_col1, opt_col2, _opt_col3 = st.columns([0.20, 0.25, 0.55], gap="small")
+            opt_col1, opt_col2 = st.columns(2, gap="small")
             with opt_col1:
                 if st.button('Click to try again!', icon=":material/replay:"):
                     # start again
