@@ -34,6 +34,8 @@ The associated app utilities are in the './utils' folder.
 The latest dataframe containing the validated source and target language 
 phrases is in the './data' folder.
 
+The data tools are in the './data_tools' folder.
+
 ## Cloud Deployment
 The app is deployed on the Streamlit Comminity Cloud at
 [lang-learner](https://terrydolan-lang-learner.streamlit.app/). Try it!

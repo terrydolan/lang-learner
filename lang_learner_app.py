@@ -23,6 +23,7 @@ from pathlib import Path
 from pages.account import login, change_nickname, remove_user, logout
 
 # setup logger
+# logger level can be set from set_log_level group in the streamlit secrets.toml
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(levelname)s %(module)s %(funcName)s %(message)s')
 # preferred format for print statements for DEBUG datetime.now().strftime('%Y-%m-%d %H:%M:%S')
