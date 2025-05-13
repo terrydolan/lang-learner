@@ -25,7 +25,7 @@ else:
 def login():
     """Log the user in and set the user's nickname."""
     logger.debug(f"call: login")
-    if not st.experimental_user.is_logged_in:
+    if not st.user.is_logged_in:
         # user not yet logged in
         logger.debug(f"not logged in")
         st.write("Please login to use the app.\n")
@@ -33,12 +33,12 @@ def login():
             st.rerun()
         st.stop()
     else:
-        # login authenticated, auth info is in st.experimental_user
-        # logger.debug(f"log in authenticated, {st.experimental_user.to_dict()=}")
+        # login authenticated, auth info is in st.user
+        # logger.debug(f"log in authenticated, {st.user.to_dict()=}")
 
         # define key user data from auth data and save to session state
         if "user_id" not in st.session_state:
-            user_dict = st.experimental_user.to_dict()
+            user_dict = st.user.to_dict()
             st.session_state.user_id = user_dict['email'].strip()
             st.session_state.user_given_name = user_dict['given_name'].strip()
             logger.debug(f"Logged in with User id: '{st.session_state.user_id}'")

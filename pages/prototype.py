@@ -22,11 +22,13 @@ def main():
     # prototype display of buttons on mobile
     st.write("Aim: check button behaviour on mobile devices")
     col_proto1, col_proto2 = st.columns(2, gap='small')
-    for i in range(1, 6+1):
+    for i in range(1, 5+1):
         with col_proto1:
-            st.button(f"twelve_lft_{i}", use_container_width=True)
+            # st.button(f"twelve_lft_{i}", use_container_width=True)
+            st.button(f"eight_l{i}", use_container_width=True)
         with col_proto2:
-            st.button(f"twelve_rgt_{i}", use_container_width=True)
+            # st.button(f"twelve_rgt_{i}", use_container_width=True)
+            st.button(f"eight_r{i}", use_container_width=True)
 
 
 if __name__ == "__main__":

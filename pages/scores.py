@@ -3,7 +3,7 @@ Module: scores.py
 Description: Contains logic for the Scores miniapp page.
 
 ToDo:
-- remove miniapp filter if only one value
+- add bold styling when (if) supported by st.dataframe in future st.release.
 """
 import logging
 import streamlit as st
@@ -64,34 +64,17 @@ def build_scores_table(miniapp):
 
 
 def highlight_row_with_this_user_nickname(row: pd.Series):
-    """Return all items in row highlighted if row has this user's nickname."""
+    """Return all items in row highlighted if row has this user's nickname.
+
+    Highlight using Streamlit's backgound colour for row selection in light mode.
+    """
     if ('Nickname' in row.index and
             row.Nickname == st.session_state.user_nickname):
         # ToDo: add bold styling when (if) supported by st.dataframe in future st.release
         # return ['background-color: lightyellow; font-weight: bold'] * len(row)
-        return ['background-color: lightyellow'] * len(row)
+        return ['background-color: rgba(251,233,234,255); color: black'] * len(row)
     else:
         return [''] * len(row)
-
-
-# # Note: streamlit does not support display of index styling in st.dataframe() so
-# # alternative (and simpler!) solution is to promote the index to a Position column
-# def highlight_index_with_this_user_nickname(idx: pd.Series, df: pd.DataFrame):
-#     """Return all items in index idx highlighted if df.iloc[idx] has this user's nickname.
-#
-#     example call:
-#     st.dataframe(df.apply_index(highlight_index_with_this_user_nickname, df=df))
-#     """
-#     colour_l = []
-#     for i in idx:
-#         # search Nickname for this user
-#         # note that idx starts at 1 so use loc
-#         if st.session_state.user_nickname in df.loc[i]['Nickname']:
-#             colour_l.append('background-color: lightyellow')
-#         else:
-#             colour_l.append('')
-#
-#     return colour_l
 
 
 def main():
@@ -103,7 +86,7 @@ def main():
 
     # select the miniapp
     mini_app_friendly_names = list(miniapp_map.keys())
-    selection = st.radio(label="Select Mini-app", options=mini_app_friendly_names, horizontal=True)
+    selection = st.radio(label="Selected Mini-app", options=mini_app_friendly_names, horizontal=True)
     st.info(f"Best score for {selection}")
     logger.debug(f"user selected scores for {selection=}")
 

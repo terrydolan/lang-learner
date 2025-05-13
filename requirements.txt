@@ -2,5 +2,5 @@
 Authlib==1.5.1  # declared streamlit pre-requisite for st.login()
 pandas==2.2.3
 streamlined-custom-component==1.0  # used for prototyping only
-streamlit==1.44.1
+streamlit==1.45.1
 st-gsheets-connection==0.1.0

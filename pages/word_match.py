@@ -68,7 +68,7 @@ else:
 # define global constants to control dynamic behaviour
 COUNTDOWN_FROM = 120  # total seconds to countdown from to match word pairs
 COL_TOT = 2  # total number of columns, 2 columns for display of word pairs
-ROW_TOT = 6  # total number of rows (word pairs) per page
+ROW_TOT = 5  # total number of rows (word pairs) per page
 LEFT = 0  # left column has index=0
 RIGHT = 1  # right column has index=1
 ICON_HIT = "🟢"  # indicates a correct word pair match (hit)
@@ -242,7 +242,6 @@ class ClickedButton:
 # ------------------------------------------------------------------------------
 # functions
 # ------------------------------------------------------------------------------
-
 
 
 def get_shuffled_word_pairs(source_language, target_language):
@@ -510,9 +509,11 @@ def friendly_secs(total_seconds):
 
 
 def highlight_cols(_s):
-    """Return a selected background colour."""
-    colour = '#fbe9ea'  # color matches(ish) Streamlit's row selection colour, rgba(251,233,234,255)
-    return f"background-color: {colour}"
+    """Return a selected background colour.
+
+    Highlight using Streamlit's backgound colour for row selection in light mode.
+    """
+    return "background-color: rgba(251,233,234,255); color: black;"
 
 
 def display_misses(source_lang, target_lang, word_pair_mismatch, miss_list):
@@ -564,7 +565,7 @@ def display_misses(source_lang, target_lang, word_pair_mismatch, miss_list):
         df_sel = df_misses
 
     # tell the user that the dataframe will be active i.e. user can select a row for more info
-    st.write("You can select a row to see more information.")
+    st.write("You can select a row to see more information by clicking in the left-most column.")
 
     # prepare dataframe for display
     # rename columns to make them more user-friendly and descriptive

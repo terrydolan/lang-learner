@@ -22,6 +22,10 @@ import streamlit as st
 from pathlib import Path
 from pages.account import login, change_nickname, remove_user, logout
 
+# set streamlit page config, must be the first streamlit command
+st.set_page_config(page_title="Language Learner App",
+                   layout='wide',
+                   page_icon=":material/language:")
 # setup logger
 # logger level can be set from set_log_level group in the streamlit secrets.toml
 logger = logging.getLogger(__name__)
@@ -50,11 +54,7 @@ def sel_lang_pair():
 
 def main():
     """Main program logic for language learner app."""
-    logger.debug(f"call: start Lang Learner app {st.experimental_user.is_logged_in=} {'='*50}")
-    st.set_page_config(page_title="Language Learner App",
-                       layout='wide',
-                       page_icon=":material/language:")
-    # st.title("Language Learner App")
+    logger.debug(f"call: start Lang Learner app {st.user.is_logged_in=} {'='*50}")
 
     # login
     login()
