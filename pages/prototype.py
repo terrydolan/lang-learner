@@ -14,6 +14,20 @@ if this_file_stem in st.secrets.set_log_level:
 else:
     logger.setLevel(logging.WARNING)
 
+
+def fix_mobile_columns():
+    """ define two flex columns for mobile
+    https://github.com/streamlit/streamlit/issues/6592
+    """
+    st.write('''<style>
+    [data-testid="column"] {
+        width: calc(50.0% - 1rem) !important;
+        flex: 1 1 calc(50.0% - 1rem) !important;
+        min-width: calc(50.0% - 1rem) !important;
+    }
+    </style>''', unsafe_allow_html=True)
+
+
 def main():
     """Main for prototype."""
     st.subheader("Prototype")
@@ -21,7 +35,8 @@ def main():
 
     # prototype display of buttons on mobile
     st.write("Aim: check button behaviour on mobile devices")
-    col_proto1, col_proto2, _col_proto3 = st.columns([.25, 0.25, 0.5], gap='small')
+    col_proto1, col_proto2 = st.columns(2, gap='small')
+    fix_mobile_columns()
     for i in range(1, 5+1):
         with col_proto1:
             # st.button(f"twelve_lft_{i}", use_container_width=True)
