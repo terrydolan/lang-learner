@@ -39,7 +39,7 @@ def main():
     st.subheader("Proto1")
     fix_mobile_columns()
     col1, col2 = st.columns(2, gap='small')
-    fix_mobile_columns()
+    # fix_mobile_columns()
     for i in range(1, 5+1):
         with col1:
             # st.button(f"twelve_lft_{i}", use_container_width=True)
