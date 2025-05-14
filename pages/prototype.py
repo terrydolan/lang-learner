@@ -54,19 +54,53 @@ def main():
             st.button(f"s4r{i}")
 
     st.write("---")
-    st.subheader("Proto2: Use Container Width")
+    st.subheader("Proto2: Use Container Width (4 chars)")
     fix_mobile_columns()
-    col_1, col_2 = st.columns(2, gap='small')
+    col2_1, col2_2 = st.columns(2, gap='small')
     for i in range(1, 2+1):
-        with col_1:
+        with col2_1:
             # st.button(f"twelve_lft_{i}", use_container_width=True)
             # st.button(f"eight_l{i}", use_container_width=True)
             st.button(f"4_l{i}", use_container_width=True)
             # st.button(f"s4l{i}")
-        with col_2:
+        with col2_2:
             # st.button(f"twelve_rgt_{i}", use_container_width=True)
             # st.button(f"eight_r{i}", use_container_width=True)
             st.button(f"4_r{i}", use_container_width=True)
+            # st.button(f"s4r{i}")
+
+    st.write("---")
+    st.subheader("Proto3: Use Container Width (8 chars)")
+    fix_mobile_columns()
+    col3_1, col3_2 = st.columns(2, gap='small')
+    for i in range(1, 2+1):
+        with col3_1:
+            # st.button(f"twelve_lft_{i}", use_container_width=True)
+            st.button(f"eight_l{i}", use_container_width=True)
+            # st.button(f"4_l{i}", use_container_width=True)
+            # st.button(f"s4l{i}")
+        with col3_2:
+            # st.button(f"twelve_rgt_{i}", use_container_width=True)
+            st.button(f"eight_r{i}", use_container_width=True)
+            # st.button(f"4_r{i}", use_container_width=True)
+            # st.button(f"s4r{i}")
+
+    st.write("---")
+    st.subheader("Proto4: Use Container Width (16 chars)")
+    fix_mobile_columns()
+    col4_1, col4_2 = st.columns(2, gap='small')
+    for i in range(1, 2+1):
+        with col4_1:
+            st.button(f"sixteen_chr_lft{i}", use_container_width=True)
+            # st.button(f"twelve_lft_{i}", use_container_width=True)
+            # st.button(f"eight_l{i}", use_container_width=True)
+            # st.button(f"4_l{i}", use_container_width=True)
+            # st.button(f"s4l{i}")
+        with col4_2:
+            st.button(f"sixteen_chr_rgt{i}", use_container_width=True)
+            # st.button(f"twelve_rgt_{i}", use_container_width=True)
+            # st.button(f"eight_r{i}", use_container_width=True)
+            # st.button(f"4_r{i}", use_container_width=True)
             # st.button(f"s4r{i}")
 
     # st.subheader("Proto2")
