@@ -109,13 +109,13 @@ def main():
     col5_1, col5_2 = st.columns(2, gap='small', vertical_alignment="bottom")
     for i in range(1, 2+1):
         with col5_1:
-            st.button(f"sixteen_ch__lft{i}", use_container_width=True)
+            st.button(f"sixteen_ch _lft{i}", use_container_width=True)
             # st.button(f"twelve_lft_{i}", use_container_width=True)
             # st.button(f"eight_l{i}", use_container_width=True)
             # st.button(f"4_l{i}", use_container_width=True)
             # st.button(f"s4l{i}")
         with col5_2:
-            st.button(f"sixteen_ch__rgt{i}", use_container_width=True)
+            st.button(f"sixteen_ch _rgt{i}", use_container_width=True)
             # st.button(f"twelve_rgt_{i}", use_container_width=True)
             # st.button(f"eight_r{i}", use_container_width=True)
             # st.button(f"4_r{i}", use_container_width=True)
@@ -135,6 +135,28 @@ def main():
             # st.button(f"s4l{i}")
         with col6_2:
             st.button(f"thirtytwo32 thirtytwo chars rgt{i}", use_container_width=True)
+            # st.button(f"sixteen_chr_rgt{i}", use_container_width=True)
+            # st.button(f"twelve_rgt_{i}", use_container_width=True)
+            # st.button(f"eight_r{i}", use_container_width=True)
+            # st.button(f"4_r{i}", use_container_width=True)
+            # st.button(f"s4r{i}")
+
+    st.write("---")
+    st.subheader("Proto7: Use Container Width (31 chars, valign on bottom)")
+    fix_mobile_columns()
+    col7_1, col7_2 = st.columns(2, gap='small', vertical_alignment="bottom")
+    for i in range(1, 2+1):
+        with col7_1:
+            st.button(f"thirtytwo_ thirtytwo chars lft{i}", use_container_width=True)
+            # st.button(f"thirtytwo32 thirtytwo chars lft{i}", use_container_width=True)
+            # st.button(f"sixteen_chr_lft{i}", use_container_width=True)
+            # st.button(f"twelve_lft_{i}", use_container_width=True)
+            # st.button(f"eight_l{i}", use_container_width=True)
+            # st.button(f"4_l{i}", use_container_width=True)
+            # st.button(f"s4l{i}")
+        with col7_2:
+            st.button(f"thirtytwo_ thirtytwo chars rgt{i}", use_container_width=True)
+            # st.button(f"thirtytwo32 thirtytwo chars rgt{i}", use_container_width=True)
             # st.button(f"sixteen_chr_rgt{i}", use_container_width=True)
             # st.button(f"twelve_rgt_{i}", use_container_width=True)
             # st.button(f"eight_r{i}", use_container_width=True)
