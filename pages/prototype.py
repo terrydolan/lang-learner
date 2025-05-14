@@ -22,9 +22,12 @@ def fix_mobile_columns():
     logger.debug(f"call: fix_mobile_columns()")
     st.write('''<style>
     [data-testid="stColumn"] {
-        width: calc(50.0% - 1rem) !important;
-        flex: 1 1 calc(50.0% - 1rem) !important;
-        min-width: calc(50.0% - 1rem) !important;
+        # width: calc(50.0% - 1rem) !important;
+        # flex: 1 1 calc(50.0% - 1rem) !important;
+        # min-width: calc(50.0% - 1rem) !important;
+        width: calc(33.333.0% - 1rem) !important;
+        flex: 1 1 calc(33.333.0% - 1rem) !important;
+        min-width: calc(33.333.0% - 1rem) !important;
     }
     </style>''', unsafe_allow_html=True)
 
@@ -37,6 +40,20 @@ def main():
     # prototype display of buttons on mobile
     st.write("Aim: support two horizontal button on mobile devices")
 
+    st.subheader("Start by display 3 items in 3 columns")
+    # st.write('''<style>
+    # [data-testid="stColumn"] {
+    #     width: calc(33.333.0% - 1rem) !important;
+    #     flex: 1 1 calc(33.333.0% - 1rem) !important;
+    #     min-width: calc(33.333.0% - 1rem) !important;
+    # }
+    # </style>''', unsafe_allow_html=True)
+    col0_1, col0_2, col0_3 = st.columns(3, gap='small', vertical_alignment="bottom")
+    col0_1.button("Countdown")
+    col0_2.metric("Hit", value=6)
+    col0_3.metric("Miss", value=2)
+
+    st.write("---")
     st.subheader("Proto1: Basic")
     fix_mobile_columns()
     col1, col2 = st.columns(2, gap='small')
