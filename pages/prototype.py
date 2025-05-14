@@ -21,7 +21,7 @@ def fix_mobile_columns():
     """
     logger.debug(f"call: fix_mobile_columns()")
     st.write('''<style>
-    [data-testid="column"] {
+    [data-testid="stColumn"] {
         width: calc(50.0% - 1rem) !important;
         flex: 1 1 calc(50.0% - 1rem) !important;
         min-width: calc(50.0% - 1rem) !important;
@@ -36,19 +36,36 @@ def main():
 
     # prototype display of buttons on mobile
     st.write("Aim: support two horizontal button on mobile devices")
-    col_proto1, col_proto2 = st.columns(2, gap='small')
+    st.subheader("Proto1")
+    fix_mobile_columns()
+    col1, col2 = st.columns(2, gap='small')
     fix_mobile_columns()
     for i in range(1, 5+1):
-        with col_proto1:
+        with col1:
             # st.button(f"twelve_lft_{i}", use_container_width=True)
             # st.button(f"eight_l{i}", use_container_width=True)
             # st.button(f"4_l{i}", use_container_width=True)
-            st.button(f"4_l{i}")
-        with col_proto2:
+            st.button(f"s4l{i}")
+        with col2:
             # st.button(f"twelve_rgt_{i}", use_container_width=True)
             # st.button(f"eight_r{i}", use_container_width=True)
             # st.button(f"4_r{i}", use_container_width=True)
-            st.button(f"4_r{i}")
+            st.button(f"s4r{i}")
+
+    # st.subheader("Proto2")
+    # col_proto1, col_proto2 = st.columns(2, gap='small')
+    # fix_mobile_columns()
+    # for i in range(1, 5+1):
+    #     with col_proto1:
+    #         # st.button(f"twelve_lft_{i}", use_container_width=True)
+    #         # st.button(f"eight_l{i}", use_container_width=True)
+    #         # st.button(f"4_l{i}", use_container_width=True)
+    #         st.button(f"4_l{i}")
+    #     with col_proto2:
+    #         # st.button(f"twelve_rgt_{i}", use_container_width=True)
+    #         # st.button(f"eight_r{i}", use_container_width=True)
+    #         # st.button(f"4_r{i}", use_container_width=True)
+    #         st.button(f"4_r{i}")
 
 
 if __name__ == "__main__":
