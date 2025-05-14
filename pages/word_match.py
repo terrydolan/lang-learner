@@ -34,6 +34,9 @@ restarted on switch back
 
 ToDo / Nice-to-have:
 - add info that explains the word match miniapp
+- remove fix_mobile_columns() and its 2 column limitation, also re-introduce display of miss metric
+as this requires 3 columns; dependent on streamlit release of Flex layout #10895
+https://github.com/streamlit/streamlit/issues/10895
 - set a temporary highlight colour or a glow when there is a successful or
 unsuccessful word match e.g. green for hit and red for miss
 - monitor use of updated countdown_from on each call to st_countdown; this results
@@ -658,6 +661,24 @@ def get_high_score(user_id, miniapp):
     return high_score
 
 
+def fix_mobile_columns():
+    """ define two flex columns for mobile
+    https://github.com/streamlit/streamlit/issues/6592
+
+    Limitations:
+    - Note that this changes style of all columns thereby restricting display to 2 columns
+    - ToDo: remove use of function when streamlit release support for Flex layout #10895
+    """
+    logger.debug(f"call: fix_mobile_columns()")
+    st.write('''<style>
+    [data-testid="stColumn"] {
+        width: calc(50.0% - 1rem) !important;
+        flex: 1 1 calc(50.0% - 1rem) !important;
+        min-width: calc(50.0% - 1rem) !important;
+    }
+    </style>''', unsafe_allow_html=True)
+
+
 def main():
     """Main for word pair match."""
     logger.debug(f"call: start Word Match mini-app {'-'*50}")
@@ -711,7 +732,10 @@ def main():
 
         # prepare columns to display progress
         # the metrics will be in cols 1 and 2; the countdown timer will be in col4
-        col1, col2, col3 = st.columns(3, vertical_alignment="bottom")
+        # disable display of 3 cols because of streamlit mobile display limitations
+        # ToDo: restore miss metric in col3 when flex layout available
+        # col1, col2, col3 = st.columns(3, vertical_alignment="bottom")
+        col1, col2 = st.columns(2, vertical_alignment="bottom")
         with col1:
             # run the st_countdown timer and read the seconds remaining
             # hide the running man as this can be distracting when updated every countdown tick
@@ -732,9 +756,10 @@ def main():
         with col2:
             # display hit metric
             st.metric(label=ICON_HIT+"Hit", value=st.session_state.word_pair_match)
-        with col3:
-            # display miss metric
-            st.metric(label=ICON_MISS+"Miss", value=st.session_state.word_pair_mismatch)
+        # disable display of miss metric in col3 as 3 cols disabled because of streamlit mobile display limitations
+        # ToDo: restore miss metric in col3 when flex layout available
+        #     # display miss metric
+        #     st.metric(label=ICON_MISS+"Miss", value=st.session_state.word_pair_mismatch)
 
         logger.debug(f"progress metrics: {seconds_remaining=}, {st.session_state.word_pair_match=}, "
                      f"{st.session_state.word_pair_mismatch=}")
@@ -761,7 +786,8 @@ def main():
             # logger.debug(f"main for loop: {row=}, {st.session_state.page_number=}")
             # generate a pair of left and right buttons for each row
             # the button's 'on_click' callback function handles the matching logic
-            btn_left, btn_right = st.columns(COL_TOT)
+            btn_left, btn_right = st.columns(COL_TOT, gap="small", vertical_alignment="bottom")
+            fix_mobile_columns()  # fix display of horizontal buttons on mobile device (limits display to 2 cols)
             btn_left.button(
                 words_left_page[row],
                 use_container_width=True,
