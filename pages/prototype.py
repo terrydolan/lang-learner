@@ -31,44 +31,44 @@ else:
 #     }
 #     </style>''', unsafe_allow_html=True)
 
-HORIZONTAL_STYLE = """
-<style class="hide-element">
-    /* Hides the style container and removes the extra spacing */
-    .element-container:has(.hide-element) {
-        display: none;
-    }
-    /*
-        The selector for >.element-container is necessary to avoid selecting the whole
-        body of the streamlit app, which is also a stVerticalBlock.
-    */
-    div[data-testid="stVerticalBlock"]:has(> .element-container .horizontal-marker) {
-        display: flex;
-        flex-direction: row !important;
-        flex-wrap: wrap;
-        /* gap: 0.5rem; */
-        align-items: baseline;
-    }
-    /* Buttons and their parent container all have a width of 704px, which we need to override */
-    div[data-testid="stVerticalBlock"]:has(> .element-container .horizontal-marker) div {
-        / * width: max-content !important; */
-        width: calc(50.0% - 1rem) !important;
-        flex: 1 1 calc(50.0% - 1rem) !important;
-        min-width: calc(50.0% - 1rem) !important;
-    }
-    /* Just an example of how you would style buttons, if desired */
-    div[data-testid="stVerticalBlock"]:has(> .element-container .horizontal-marker) button {
-        border-color: green;
-    }
-</style>
-"""
-
-
-@contextmanager
-def st_horizontal():
-    st.markdown(HORIZONTAL_STYLE, unsafe_allow_html=True)
-    with st.container():
-        st.markdown('<span class="hide-element horizontal-marker"></span>', unsafe_allow_html=True)
-        yield
+# HORIZONTAL_STYLE = """
+# <style class="hide-element">
+#     /* Hides the style container and removes the extra spacing */
+#     .element-container:has(.hide-element) {
+#         display: none;
+#     }
+#     /*
+#         The selector for >.element-container is necessary to avoid selecting the whole
+#         body of the streamlit app, which is also a stVerticalBlock.
+#     */
+#     div[data-testid="stVerticalBlock"]:has(> .element-container .horizontal-marker) {
+#         display: flex;
+#         flex-direction: row !important;
+#         flex-wrap: wrap;
+#         /* gap: 0.5rem; */
+#         align-items: baseline;
+#     }
+#     /* Buttons and their parent container all have a width of 704px, which we need to override */
+#     div[data-testid="stVerticalBlock"]:has(> .element-container .horizontal-marker) div {
+#         / * width: max-content !important; */
+#         width: calc(50.0% - 1rem) !important;
+#         flex: 1 1 calc(50.0% - 1rem) !important;
+#         min-width: calc(50.0% - 1rem) !important;
+#     }
+#     /* Just an example of how you would style buttons, if desired */
+#     div[data-testid="stVerticalBlock"]:has(> .element-container .horizontal-marker) button {
+#         border-color: green;
+#     }
+# </style>
+# """
+#
+#
+# @contextmanager
+# def st_horizontal():
+#     st.markdown(HORIZONTAL_STYLE, unsafe_allow_html=True)
+#     with st.container():
+#         st.markdown('<span class="hide-element horizontal-marker"></span>', unsafe_allow_html=True)
+#         yield
 
 
 @contextmanager
@@ -147,27 +147,20 @@ def main():
 
     st.subheader("Start by display 3 items in 3 standard columns")
     col0_1, col0_2, col0_3 = st.columns(3, gap='small', vertical_alignment="bottom")
-    col0_1.button("Countdown")
-    col0_2.metric("Hit", value=6)
+    col0_1.button("CNT 2:00 DN")
+    col0_2.metric("Hit", value=36)
     col0_3.metric("Miss", value=2)
 
     st.write("and 2 standard word match columns")
     col1, col2 = st.columns(2, gap='small')
     for i in range(1, 2+1):
         with col1:
-            # st.button(f"twelve_lft_{i}", use_container_width=True)
-            # st.button(f"eight_l{i}", use_container_width=True)
-            # st.button(f"4_l{i}", use_container_width=True)
             st.button(f"Fifteen chars l{i}", use_container_width=True)
         with col2:
-            # st.button(f"twelve_rgt_{i}", use_container_width=True)
-            # st.button(f"eight_r{i}", use_container_width=True)
-            # st.button(f"4_r{i}", use_container_width=True)
             st.button(f"Fifteen chars r{i}", use_container_width=True)
 
     st.write("---")
     # custom CSS
-    # https://gist.github.com/ddorn/decf8f21421728b02b447589e7ec7235
     st.subheader("Proto1: Basic Demo Custom CSS, 15 chars")
     with st_columns_horizontal_fix_mobile(2):
         st.button("15fteen charsl1", use_container_width=True)
@@ -177,22 +170,22 @@ def main():
     st.subheader("Proto2: Demo Custom CSS Width (4 chars)")
     for i in range(1, 2+1):
         with st_columns_horizontal_fix_mobile(2):
-            st.button(f"4_l{i}", use_container_width=True)
-            st.button(f"4_r{i}", use_container_width=True)
+            st.button(f"4 l{i}", use_container_width=True)
+            st.button(f"4 r{i}", use_container_width=True)
 
     st.write("---")
     st.subheader("Proto3: Use Container Width (8 chars)")
     for i in range(1, 2+1):
         with st_columns_horizontal_fix_mobile(2):
-            st.button(f"eight_l{i}", use_container_width=True)
-            st.button(f"eight_r{i}", use_container_width=True)
+            st.button(f"eight l{i}", use_container_width=True)
+            st.button(f"eight r{i}", use_container_width=True)
 
     st.write("---")
     st.subheader("Proto4: Use Container Width (16 chars)")
     for i in range(1, 2+1):
         with st_columns_horizontal_fix_mobile(2):
-            st.button(f"sixteen_chr_lft{i}", use_container_width=True)
-            st.button(f"sixteen_chr_rgt{i}", use_container_width=True)
+            st.button(f"sixteen chr lft{i}", use_container_width=True)
+            st.button(f"sixteen chr rgt{i}", use_container_width=True)
 
     st.write("---")
     st.subheader("Proto6: Use Container Width (32 chars)")
@@ -211,9 +204,9 @@ def main():
     st.write("---")
     st.subheader("Proto8: Use Container Width 3 cols (may need vertical alignment?)")
     with st_columns_horizontal_fix_mobile(3):
-        st.button("Countdown2")
-        st.metric("Hit2", value=6)
-        st.metric("Miss2", value=2)
+        st.button("CNT 2:01 DN")
+        st.metric("H1t", value=36)
+        st.metric("M1ss", value=2)
 
     # # prototype display of buttons on mobile
     # st.write("Aim: support two horizontal button on mobile devices")
