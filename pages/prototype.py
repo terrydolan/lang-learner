@@ -44,19 +44,20 @@ HORIZONTAL_STYLE = """
         display: flex;
         flex-direction: row !important;
         flex-wrap: wrap;
-        gap: 0.5rem;
+        /* gap: 0.5rem; */
         align-items: baseline;
     }
     /* Buttons and their parent container all have a width of 704px, which we need to override */
     div[data-testid="stVerticalBlock"]:has(> .element-container .horizontal-marker) div {
-        width: max-content !important;
+        / * width: max-content !important; */
+        width: calc(50.0% - 1rem) !important;
+        flex: 1 1 calc(50.0% - 1rem) !important;
+        min-width: calc(50.0% - 1rem) !important;
     }
     /* Just an example of how you would style buttons, if desired */
-    /*
     div[data-testid="stVerticalBlock"]:has(> .element-container .horizontal-marker) button {
-        border-color: red;
+        border-color: green;
     }
-    */
 </style>
 """
 
@@ -77,57 +78,144 @@ def main():
     # prototype display of buttons on mobile
     st.write("Aim: support two horizontal button on mobile devices")
 
-    st.subheader("Start by display 3 items in 3 columns")
+    st.subheader("Start by display 3 items in 3 standard columns")
     col0_1, col0_2, col0_3 = st.columns(3, gap='small', vertical_alignment="bottom")
     col0_1.button("Countdown")
     col0_2.metric("Hit", value=6)
     col0_3.metric("Miss", value=2)
 
+    st.write("and 2 word match columns")
+    col1, col2 = st.columns(2, gap='small')
+    for i in range(1, 2+1):
+        with col1:
+            # st.button(f"twelve_lft_{i}", use_container_width=True)
+            # st.button(f"eight_l{i}", use_container_width=True)
+            # st.button(f"4_l{i}", use_container_width=True)
+            st.button(f"Fifteen chars l{i}", use_container_width=True)
+        with col2:
+            # st.button(f"twelve_rgt_{i}", use_container_width=True)
+            # st.button(f"eight_r{i}", use_container_width=True)
+            # st.button(f"4_r{i}", use_container_width=True)
+            st.button(f"Fifteen chars r{i}", use_container_width=True)
+
     st.write("---")
     # custom CSS
     # https://gist.github.com/ddorn/decf8f21421728b02b447589e7ec7235
-    st.subheader("Proto1: Demo Custom CSS")
+    st.subheader("Proto1: Basic Demo Custom CSS")
     buttons = [
-                  "Allow",
-                  "Deny",
-                  "Always Allow",
-                  "Edit",
-                  "More Options",
+                  "Fifteen charsl1",
+                  "Fifteen charsr1",
+                  "Fifteen charsl1",
+                  "Fifteen charsl2",
+                  "thirtytwo32 thirtytwo chars lft1",
+                  "thirtytwo32 thirtytwo chars rgt1",
+                  "thirtytwo32 thirtytwo chars lft2",
+                  "thirtytwo32 thirtytwo chars rgt1",
               ] * 2
 
-    st.subheader("With the new horizontal layout")
     with st_horizontal():
-        st.write("Confirm?")
-        st.button("✅ Yes")
-        st.button("❌ No")
-
-    with st_horizontal():
-        for i, option in enumerate(buttons):
-            st.button(option, key=f"button_{i}")
-
-    st.subheader("With columns")
-    cols = st.columns(len(buttons))
-    for i, option in enumerate(buttons):
-        cols[i].button(option, key=f"button_col_{i}")
+        st.button("15fteen charsl1", use_container_width=True)
+        st.button("15fteen charsr1", use_container_width=True)
+        st.button("15fteen charsl2", use_container_width=True)
+        st.button("15fteen charsr2", use_container_width=True)
 
     st.write("---")
-    st.subheader("Sample elements to check that we did not break anything")
-    st.button("A button")
-    st.button("Another button")
-    with st.expander("Code"):
-        st.code("""
-        print("Hello, world!")
-        """, language="python")
+    st.subheader("Proto2: Demo Custom CSS Width (4 chars)")
+    for i in range(1, 2+1):
+        with st_horizontal():
+            # st.button(f"twelve_lft_{i}", use_container_width=True)
+            # st.button(f"eight_l{i}", use_container_width=True)
+            st.button(f"4_l{i}", use_container_width=True)
+            # st.button(f"s4l{i}")
+        # with st_horizontal():
+            # st.button(f"twelve_rgt_{i}", use_container_width=True)
+            # st.button(f"eight_r{i}", use_container_width=True)
+            st.button(f"4_r{i}", use_container_width=True)
+            # st.button(f"s4r{i}")
 
-    cols = st.columns(3)
-    for i, col in enumerate(cols):
-        col.write(f"Column {i}")
-        col.button("Click me", key=f"col_{i}")
+    st.write("---")
+    st.subheader("Proto3: Use Container Width (8 chars)")
+    for i in range(1, 2+1):
+        with st_horizontal():
+            # st.button(f"twelve_lft_{i}", use_container_width=True)
+            st.button(f"eight_l{i}", use_container_width=True)
+            # st.button(f"4_l{i}", use_container_width=True)
+            # st.button(f"s4l{i}")
+        # with st_horizontal():
+            # st.button(f"twelve_rgt_{i}", use_container_width=True)
+            st.button(f"eight_r{i}", use_container_width=True)
+            # st.button(f"4_r{i}", use_container_width=True)
+            # st.button(f"s4r{i}")
 
-    with st.container(border=True):
-        st.write("Inside container")
-        st.button("Click me", key="container")
-        st.button("Click me", key="container1")
+    st.write("---")
+    st.subheader("Proto4: Use Container Width (16 chars)")
+    for i in range(1, 2+1):
+        with st_horizontal():
+            st.button(f"sixteen_chr_lft{i}", use_container_width=True)
+            # st.button(f"twelve_lft_{i}", use_container_width=True)
+            # st.button(f"eight_l{i}", use_container_width=True)
+            # st.button(f"4_l{i}", use_container_width=True)
+            # st.button(f"s4l{i}")
+        # with st_horizontal():
+            st.button(f"sixteen_chr_rgt{i}", use_container_width=True)
+            # st.button(f"twelve_rgt_{i}", use_container_width=True)
+            # st.button(f"eight_r{i}", use_container_width=True)
+            # st.button(f"4_r{i}", use_container_width=True)
+            # st.button(f"s4r{i}")
+
+    st.write("---")
+    st.subheader("Proto5: Use Container Width (16 chars, valign on bottom)")
+    for i in range(1, 2+1):
+        with st_horizontal():
+            st.button(f"sixteen_ch _lft{i}", use_container_width=True)
+            # st.button(f"twelve_lft_{i}", use_container_width=True)
+            # st.button(f"eight_l{i}", use_container_width=True)
+            # st.button(f"4_l{i}", use_container_width=True)
+            # st.button(f"s4l{i}")
+        # with st_horizontal():
+            st.button(f"sixteen_ch _rgt{i}", use_container_width=True)
+            # st.button(f"twelve_rgt_{i}", use_container_width=True)
+            # st.button(f"eight_r{i}", use_container_width=True)
+            # st.button(f"4_r{i}", use_container_width=True)
+            # st.button(f"s4r{i}")
+
+    st.write("---")
+    st.subheader("Proto6: Use Container Width (32 chars, valign on bottom)")
+    for i in range(1, 2+1):
+        with st_horizontal():
+            st.button(f"thirtytwo32 thirtytwo chars lft{i}", use_container_width=True)
+            # st.button(f"sixteen_chr_lft{i}", use_container_width=True)
+            # st.button(f"twelve_lft_{i}", use_container_width=True)
+            # st.button(f"eight_l{i}", use_container_width=True)
+            # st.button(f"4_l{i}", use_container_width=True)
+            # st.button(f"s4l{i}")
+        # with st_horizontal():
+            st.button(f"thirtytwo32 thirtytwo chars rgt{i}", use_container_width=True)
+            # st.button(f"sixteen_chr_rgt{i}", use_container_width=True)
+            # st.button(f"twelve_rgt_{i}", use_container_width=True)
+            # st.button(f"eight_r{i}", use_container_width=True)
+            # st.button(f"4_r{i}", use_container_width=True)
+            # st.button(f"s4r{i}")
+
+    st.write("---")
+    st.subheader("Proto7: Use Container Width (31 chars, valign on bottom)")
+    for i in range(1, 2+1):
+        with st_horizontal():
+            st.button(f"thirtytwo_ thirtytwo chars lft{i}", use_container_width=True)
+            # st.button(f"thirtytwo32 thirtytwo chars lft{i}", use_container_width=True)
+            # st.button(f"sixteen_chr_lft{i}", use_container_width=True)
+            # st.button(f"twelve_lft_{i}", use_container_width=True)
+            # st.button(f"eight_l{i}", use_container_width=True)
+            # st.button(f"4_l{i}", use_container_width=True)
+            # st.button(f"s4l{i}")
+        # with st_horizontal():
+            st.button(f"thirtytwo_ thirtytwo chars rgt{i}", use_container_width=True)
+            # st.button(f"thirtytwo32 thirtytwo chars rgt{i}", use_container_width=True)
+            # st.button(f"sixteen_chr_rgt{i}", use_container_width=True)
+            # st.button(f"twelve_rgt_{i}", use_container_width=True)
+            # st.button(f"eight_r{i}", use_container_width=True)
+            # st.button(f"4_r{i}", use_container_width=True)
+            # st.button(f"s4r{i}")
 
     # # prototype display of buttons on mobile
     # st.write("Aim: support two horizontal button on mobile devices")
