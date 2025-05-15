@@ -208,6 +208,13 @@ def main():
         st.metric("H1t", value=36)
         st.metric("M1ss", value=2)
 
+    st.write("---")
+    st.subheader("Proto8: Use Container Width 3 cols (may need vertical alignment?)")
+    with st_columns_horizontal_fix_mobile(3):
+        st.button("CNT 2:02 DN")
+        st.write(f"Hit: :green[35]")
+        st.write(f"Miss: :red[3]")
+
     # # prototype display of buttons on mobile
     # st.write("Aim: support two horizontal button on mobile devices")
     #
