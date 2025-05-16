@@ -17,7 +17,7 @@ Match as many English and French words as you can before the timer runs out.
 Check your scores to see how you compare to others.
 
 ## Language Dataset and Pipeline
-The app uses a homemade list of paired French and English words and phrases.
+The app uses a hand-crafted list of paired French and English words and phrases.
 
 Before using the language data in the app, the phrases are loaded into a 
 dataframe and the translation is validated using the data tools.

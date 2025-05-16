@@ -159,11 +159,13 @@ def main():
         with col2:
             st.button(f"Fifteen chars r{i}", use_container_width=True)
 
+
     st.write("---")
     # custom CSS
     st.subheader("Proto1: Basic Demo Custom CSS, 15 chars")
     with st_columns_horizontal_fix_mobile(2):
         st.button("15fteen charsl1", use_container_width=True)
+
         st.button("15fteen charsr1", use_container_width=True)
 
     st.write("---")

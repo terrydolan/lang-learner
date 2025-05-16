@@ -34,8 +34,8 @@ restarted on switch back
 
 ToDo / Nice-to-have:
 - add info that explains the word match miniapp
-- remove fix_mobile_columns() and its 2 column limitation, also re-introduce display of miss metric
-as this requires 3 columns; dependent on streamlit release of Flex layout #10895
+- remove st_columns_horizontal_fix_mobile() and its 2 column limitation, also re-introduce display of
+miss metric as this requires 3 columns; dependent on streamlit release of Flex layout #10895
 https://github.com/streamlit/streamlit/issues/10895
 - set a temporary highlight colour or a glow when there is a successful or
 unsuccessful word match e.g. green for hit and red for miss
@@ -55,6 +55,7 @@ import utils.config as config
 from dataclasses import dataclass
 from random import shuffle
 from pathlib import Path
+from contextlib import contextmanager
 from utils.gsheet_utils import save_score_to_gsheet
 from utils.st_countdown import st_countdown
 from utils.gsheet_utils import read_scores_as_df_from_gsheet
@@ -77,6 +78,7 @@ RIGHT = 1  # right column has index=1
 ICON_HIT = "🟢"  # indicates a correct word pair match (hit)
 ICON_MISS = "🔴"  # indicates an incorrect word pair match (miss)
 MINIAPP_WORD_MATCH = "word_match"  # name of this miniapp in Scores Google sheet
+MAX_WORD_LEN_FOR_MOBILE = 15  # max word length for mobile to avoid button wrap on small displays
 DEBUG_SHOW_STATS = False  # True if progress stats should not be shown (normal is False)
 DEBUG_NO_LOG_SCORES = False  # True if scores should not be logged to scores google sheet (normal is False)
 DEBUG_NO_COUNTDOWN = False  # True if countdown is not to run (normal is False)
@@ -247,18 +249,19 @@ class ClickedButton:
 # ------------------------------------------------------------------------------
 
 
-def get_shuffled_word_pairs(source_language, target_language):
+def get_shuffled_word_pairs(source_language, target_language, max_word_len=None):
     """Return shuffled word pairs as list of lists for the given source and target languages.
     Inputs:
     source_language: str, source language e.g. French
     target_language: str, target language e.g. English
+    max_word_len: int, maximum word length for returned word pairs (optional)
 
     Return:
     word_pairs: list, shuffled list of lists, with each inner list containing a matching pair of
     words [word_target, word_source] e.g.
         word_pairs = [['man', 'homme', ['woman', 'femme'], ...]
     """
-    logger.debug(f"call: get_shuffled_word_pairs({source_language=}, {target_language=})")
+    logger.debug(f"call: get_shuffled_word_pairs({source_language=}, {target_language=}, {max_word_len=})")
 
     # load the French English all words translation report feather file into a pandas dataframe
     word_match_all_words_file = config.lang_pair_to_all_words[(source_language, target_language)]
@@ -267,16 +270,35 @@ def get_shuffled_word_pairs(source_language, target_language):
 
     # create a shuffled list of target words mapped to source words,
     # the target language (e.g. English) is left, source language (e.g. French) is right
-    word_pairs_nouns_list = dfrpt_all[(dfrpt_all['is_source_noun'] == True) &
-                                      (dfrpt_all['is_ok_to_display'] == True)]\
-        [['target_phrase_short', 'source_noun']].sample(frac=1).values.tolist()
-    word_pairs_others_list = dfrpt_all[(dfrpt_all['is_source_noun'] == False) &
-                                       (dfrpt_all['is_ok_to_display'] == True)]\
-        [['target_phrase_short', 'source_phrase']].sample(frac=1).values.tolist()
+
+    # determine if any restrictions on word length
+    if not max_word_len:
+        # no restriction
+        max_word_len = float('inf')  # set to infinity i.e. allow all values
+
+    # select nouns
+    word_pairs_nouns_list = dfrpt_all[(
+        (dfrpt_all['is_source_noun'] == True) & (dfrpt_all['is_ok_to_display'] == True) &
+        ((dfrpt_all.source_noun.str.len() <= max_word_len) &
+         (dfrpt_all.target_phrase_short.str.len() <= max_word_len))
+        )][['target_phrase_short', 'source_noun']].sample(frac=1).values.tolist()
+    # select others
+    word_pairs_others_list = dfrpt_all[(
+        (dfrpt_all['is_source_noun'] == False) & (dfrpt_all['is_ok_to_display'] == True) &
+        ((dfrpt_all.source_phrase.str.len() <= max_word_len) &
+         (dfrpt_all.target_phrase_short.str.len() <= max_word_len))
+        )][['target_phrase_short', 'source_phrase']].sample(frac=1).values.tolist()
+    # combine nouns and others
     word_pairs = word_pairs_nouns_list + word_pairs_others_list
+
+    # shuffle in place
     shuffle(word_pairs)
 
     logger.debug(f"return: shuffled word_pairs from df, total of {len(word_pairs)} pairs loaded")
+    lt = max((t for t, _s in word_pairs), key=len)
+    ls = max((s for _t, s in word_pairs), key=len)
+    logger.debug(f"longest target is '{lt}', length={len(lt)}")
+    logger.debug(f"longest source is '{ls}', length={len(ls)}")
     # logger.debug(f"return: First 36 word pairs\n: {word_pairs[0:36]=}")
     return word_pairs
 
@@ -661,22 +683,72 @@ def get_high_score(user_id, miniapp):
     return high_score
 
 
-def fix_mobile_columns():
-    """ define two flex columns for mobile
-    https://github.com/streamlit/streamlit/issues/6592
+@contextmanager
+def st_columns_horizontal_fix_mobile(n=2):
+    """ Define n flex columns for mobile.
 
-    Limitations:
-    - Note that this changes style of all columns thereby restricting display to 2 columns
-    - ToDo: remove use of function when streamlit release support for Flex layout #10895
+    Inputs:
+    n: int, number of columns (defaults to 2)
+
+    Addresses issue on mobile where mobile solution for st.columns does not support two (or three)
+    buttons side-by-side horizontally, even though display is wide enough.
+
+    Streamlit have fix for this on the way: Flex layout #10895
+
+    ToDo: replace st_columns_horizontal_fix_mobile() when flex container available with horizontal support.
+    Based on:
+    https://gist.github.com/ddorn/decf8f21421728b02b447589e7ec7235
+
     """
-    logger.debug(f"call: fix_mobile_columns()")
-    st.write('''<style>
-    [data-testid="stColumn"] {
-        width: calc(50.0% - 1rem) !important;
-        flex: 1 1 calc(50.0% - 1rem) !important;
-        min-width: calc(50.0% - 1rem) !important;
-    }
-    </style>''', unsafe_allow_html=True)
+    logger.debug(f"call: st_columns_horizontal_fix_mobile({n=})")
+    assert n > 0, f"Number of columns must be >0, given {n=}"
+    ratio_pcnt = f"{100/n:.3f}"
+    logger.debug(f"{ratio_pcnt=}")
+
+    # define style to n flex cols for mobile
+    # note that {ratio_pcnt} must be substitued with the actual value
+    horizontal_style = """
+    <style class="hide-element">
+        /* Hides the style container and removes the extra spacing */
+        .element-container:has(.hide-element) {
+            display: none;
+        }
+        /*
+            The selector for >.element-container is necessary to avoid selecting the whole
+            body of the streamlit app, which is also a stVerticalBlock.
+        */
+        div[data-testid="stVerticalBlock"]:has(> .element-container .horizontal-marker) {
+            display: flex;
+            flex-direction: row !important;
+            flex-wrap: wrap;
+            /* gap: 0.5rem; */
+            align-items: baseline;
+        }
+        /* Buttons and their parent container all have a width of 704px, which we need to override */
+        div[data-testid="stVerticalBlock"]:has(> .element-container .horizontal-marker) div {
+            / * width: max-content !important; */
+            width: calc({ratio_pcnt}% - 1rem) !important;
+            flex: 1 1 calc({ratio_pcnt}% - 1rem) !important;
+            min-width: calc({ratio_pcnt}% - 1rem) !important;
+            margin-top: auto;  /* fix equivalent of vertical_alignment="bottom" */
+        }
+        /* Just an example of how you would style buttons, if desired */
+        /*
+        div[data-testid="stVerticalBlock"]:has(> .element-container .horizontal-marker) button {
+            border-color: green;
+        }
+        */
+    </style>
+    """
+    # replace the actual ratio_pcnt in the html
+    horizontal_style = horizontal_style.replace("{ratio_pcnt}", str(ratio_pcnt))
+
+    # apply the style and yield the horizontal marker
+    st.markdown(horizontal_style, unsafe_allow_html=True)
+    with st.container():
+        st.markdown('<span class="hide-element horizontal-marker"></span>',
+                    unsafe_allow_html=True)
+        yield
 
 
 def main():
@@ -690,7 +762,8 @@ def main():
 
     # get the list of all the word pairs, shuffled, for the selected source and target language
     if "word_pairs_shuffled" not in st.session_state:
-        st.session_state.word_pairs_shuffled = get_shuffled_word_pairs(source_language, target_language)
+        st.session_state.word_pairs_shuffled = get_shuffled_word_pairs(
+            source_language, target_language, max_word_len=MAX_WORD_LEN_FOR_MOBILE)
 
     # get user's high score for word match
     if "high_score" not in st.session_state:
@@ -781,30 +854,31 @@ def main():
 
         # dynamically generate the button grid of word pairs to match and wait
         # the user to select a word pair
+        # btn_left, btn_right = st.columns(COL_TOT, gap="small", vertical_alignment="bottom")  # ToDo: restore
         logger.debug("display buttons and wait for user input...")
         for row in range(ROW_TOT):
             # logger.debug(f"main for loop: {row=}, {st.session_state.page_number=}")
+
             # generate a pair of left and right buttons for each row
             # the button's 'on_click' callback function handles the matching logic
-            btn_left, btn_right = st.columns(COL_TOT, gap="small", vertical_alignment="bottom")
-            fix_mobile_columns()  # fix display of horizontal buttons on mobile device (limits display to 2 cols)
-            btn_left.button(
-                words_left_page[row],
-                use_container_width=True,
-                key=f'key_{row},{LEFT}',
-                on_click=on_select,
-                args=[words_left_page[row], row, LEFT,
-                      words_left_page, row],
-                type=st.session_state.btn_colour[(row, LEFT)],
-                disabled=st.session_state.btn_disabled[(row, LEFT)])
-            btn_right.button(
-                words_right_page_shuffled[row],
-                use_container_width=True, key=f'key_{row},{RIGHT}',
-                on_click=on_select,
-                args=[words_right_page_shuffled[row], row, RIGHT,
-                      words_right_page, page_indices_shuffled[row]],
-                type=st.session_state.btn_colour[(row, RIGHT)],
-                disabled=st.session_state.btn_disabled[(row, RIGHT)])
+            with st_columns_horizontal_fix_mobile(n=2):
+                st.button(  # btn_left, ToDo: restore - was with btn_left.button
+                    words_left_page[row],
+                    use_container_width=True,
+                    key=f'key_{row},{LEFT}',
+                    on_click=on_select,
+                    args=[words_left_page[row], row, LEFT,
+                          words_left_page, row],
+                    type=st.session_state.btn_colour[(row, LEFT)],
+                    disabled=st.session_state.btn_disabled[(row, LEFT)])
+                st.button(  # btn_right, ToDo: restore - was with btn_right.button
+                    words_right_page_shuffled[row],
+                    use_container_width=True, key=f'key_{row},{RIGHT}',
+                    on_click=on_select,
+                    args=[words_right_page_shuffled[row], row, RIGHT,
+                          words_right_page, page_indices_shuffled[row]],
+                    type=st.session_state.btn_colour[(row, RIGHT)],
+                    disabled=st.session_state.btn_disabled[(row, RIGHT)])
 
         if DEBUG_SHOW_STATS:
             # show progress stats on screen (debug mode)
