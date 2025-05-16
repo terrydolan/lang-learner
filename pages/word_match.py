@@ -683,6 +683,24 @@ def get_high_score(user_id, miniapp):
     return high_score
 
 
+def fix_mobile_columns():
+    """ define two flex columns for mobile
+    https://github.com/streamlit/streamlit/issues/6592
+
+    Limitations:
+    - Note that this changes style of all columns thereby restricting display to 2 columns
+    - ToDo: remove use of function when streamlit release support for Flex layout #10895
+    """
+    logger.debug(f"call: fix_mobile_columns()")
+    st.write('''<style>
+    [data-testid="stColumn"] {
+        width: calc(50.0% - 1rem) !important;
+        flex: 1 1 calc(50.0% - 1rem) !important;
+        min-width: calc(50.0% - 1rem) !important;
+    }
+    </style>''', unsafe_allow_html=True)
+
+
 @contextmanager
 def st_columns_horizontal_fix_mobile(n=2):
     """ Define n flex columns for mobile.
@@ -809,6 +827,7 @@ def main():
         # ToDo: restore miss metric in col3 when flex layout available
         # col1, col2, col3 = st.columns(3, vertical_alignment="bottom")
         col1, col2 = st.columns(2, vertical_alignment="bottom")
+        fix_mobile_columns()
         with col1:
             # run the st_countdown timer and read the seconds remaining
             # hide the running man as this can be distracting when updated every countdown tick
