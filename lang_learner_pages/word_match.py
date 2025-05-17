@@ -873,31 +873,33 @@ def main():
 
         # dynamically generate the button grid of word pairs to match and wait
         # the user to select a word pair
-        # btn_left, btn_right = st.columns(COL_TOT, gap="small", vertical_alignment="bottom")  # ToDo: restore
+        btn_left, btn_right = st.columns(COL_TOT, gap="small", vertical_alignment="bottom")
         logger.debug("display buttons and wait for user input...")
         for row in range(ROW_TOT):
             # logger.debug(f"main for loop: {row=}, {st.session_state.page_number=}")
 
             # generate a pair of left and right buttons for each row
             # the button's 'on_click' callback function handles the matching logic
-            with st_columns_horizontal_fix_mobile(n=2):
-                st.button(  # btn_left, ToDo: restore - was with btn_left.button
-                    words_left_page[row],
-                    use_container_width=True,
-                    key=f'key_{row},{LEFT}',
-                    on_click=on_select,
-                    args=[words_left_page[row], row, LEFT,
-                          words_left_page, row],
-                    type=st.session_state.btn_colour[(row, LEFT)],
-                    disabled=st.session_state.btn_disabled[(row, LEFT)])
-                st.button(  # btn_right, ToDo: restore - was with btn_right.button
-                    words_right_page_shuffled[row],
-                    use_container_width=True, key=f'key_{row},{RIGHT}',
-                    on_click=on_select,
-                    args=[words_right_page_shuffled[row], row, RIGHT,
-                          words_right_page, page_indices_shuffled[row]],
-                    type=st.session_state.btn_colour[(row, RIGHT)],
-                    disabled=st.session_state.btn_disabled[(row, RIGHT)])
+            # with st_columns_horizontal_fix_mobile(n=2):  # Temp: remove
+            #     st.button(  # btn_left, ToDo: restore - was with btn_left.button  # Temp: remove
+            btn_left.button(
+                words_left_page[row],
+                use_container_width=True,
+                key=f'key_{row},{LEFT}',
+                on_click=on_select,
+                args=[words_left_page[row], row, LEFT,
+                      words_left_page, row],
+                type=st.session_state.btn_colour[(row, LEFT)],
+                disabled=st.session_state.btn_disabled[(row, LEFT)])
+            # st.button(  # btn_right, ToDo: restore - was with btn_right.button  # Temp: remove
+            btn_right.button(  # btn_right, ToDo: restore - was with btn_right.button
+                words_right_page_shuffled[row],
+                use_container_width=True, key=f'key_{row},{RIGHT}',
+                on_click=on_select,
+                args=[words_right_page_shuffled[row], row, RIGHT,
+                      words_right_page, page_indices_shuffled[row]],
+                type=st.session_state.btn_colour[(row, RIGHT)],
+                disabled=st.session_state.btn_disabled[(row, RIGHT)])
 
         if DEBUG_SHOW_STATS:
             # show progress stats on screen (debug mode)
