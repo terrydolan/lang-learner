@@ -11,8 +11,7 @@ list of shuffled word pairs; the dataframe is prepared by the data tools
 - A hit is a successful word match, a miss is an unsuccessful word match
 - Make a page slice of the shuffled word pairs for display, a list of words_left (English words) and
 words_right (French words) e.g. [man, dog, woman, ...] and [homme, chien, femme, ...]
-- Shuffle the words_right and provide a shuffle_map; the shuffle map explains how the words were
-shuffled
+- Shuffle the words_right and provide a shuffle_map; the shuffle map explains how the words were shuffled
 - Take the page slice of word pairs and display them in a grid of buttons, English words
 in the left column and the shuffled French words in the right column
 - The user selects a pair of words, one from the left column and one from the right
@@ -32,16 +31,17 @@ restarted on switch back
 - The user is given the option of trying again or jumping to the scores page
 - The user can also review their misses
 
-ToDo / Nice-to-have:
-- add info that explains the word match miniapp
-- remove st_columns_horizontal_fix_mobile() and its 2 column limitation, also re-introduce display of
+ToDo:
+- remove fix_mobile_columns() and its 2 column limitation, also re-introduce display of
 miss metric as this requires 3 columns; dependent on streamlit release of Flex layout #10895
 https://github.com/streamlit/streamlit/issues/10895
-- set a temporary highlight colour or a glow when there is a successful or
-unsuccessful word match e.g. green for hit and red for miss
 - monitor use of updated countdown_from on each call to st_countdown; this results
 in many messages sent to javascript (though only first render effects the timer
 unless the context is updated e.g. on page change)
+
+Nice-to-have:
+- set a temporary highlight colour or a glow when there is a successful or
+unsuccessful word match e.g. green for hit and red for miss
 - mis-matched words could be stored and used as a preference for future runs or as part of a
 practice app
 - give option to report word pair data errors; could be saved to an errors file?
@@ -55,7 +55,6 @@ import utils.config as config
 from dataclasses import dataclass
 from random import shuffle
 from pathlib import Path
-from contextlib import contextmanager
 from utils.gsheet_utils import save_score_to_gsheet
 from utils.st_countdown import st_countdown
 from utils.gsheet_utils import read_scores_as_df_from_gsheet
@@ -484,7 +483,6 @@ def on_select(btn_value, btn_row, btn_col, btn_words, btn_words_index):
             # check two buttons for word match
             if ClickedButton.check_word_match(st.session_state.btn1, st.session_state.btn2):
                 # match
-                # ToDo: ideally set a temporary highlight colour e.g. green
 
                 # toggle both buttons off
                 st.session_state.btn1.toggle_button_colour()
@@ -500,7 +498,6 @@ def on_select(btn_value, btn_row, btn_col, btn_words, btn_words_index):
                 st.toast("Hit", icon=ICON_HIT)  # alt: icon=":material/thumb_up:"
             else:
                 # mis-match
-                # ToDo: ideally set a temporary highlight colour e.g. red
 
                 # get the miss dictionary and save
                 miss_dict = ClickedButton.get_correct_words_for_miss(st.session_state.btn1, st.session_state.btn2)
@@ -701,74 +698,6 @@ def fix_mobile_columns():
     </style>''', unsafe_allow_html=True)
 
 
-@contextmanager
-def st_columns_horizontal_fix_mobile(n=2):
-    """ Define n flex columns for mobile.
-
-    Inputs:
-    n: int, number of columns (defaults to 2)
-
-    Addresses issue on mobile where mobile solution for st.columns does not support two (or three)
-    buttons side-by-side horizontally, even though display is wide enough.
-
-    Streamlit have fix for this on the way: Flex layout #10895
-
-    ToDo: replace st_columns_horizontal_fix_mobile() when flex container available with horizontal support.
-    Based on:
-    https://gist.github.com/ddorn/decf8f21421728b02b447589e7ec7235
-
-    """
-    logger.debug(f"call: st_columns_horizontal_fix_mobile({n=})")
-    assert n > 0, f"Number of columns must be >0, given {n=}"
-    ratio_pcnt = f"{100/n:.3f}"
-    logger.debug(f"{ratio_pcnt=}")
-
-    # define style to n flex cols for mobile
-    # note that {ratio_pcnt} must be substitued with the actual value
-    horizontal_style = """
-    <style class="hide-element">
-        /* Hides the style container and removes the extra spacing */
-        .element-container:has(.hide-element) {
-            display: none;
-        }
-        /*
-            The selector for >.element-container is necessary to avoid selecting the whole
-            body of the streamlit app, which is also a stVerticalBlock.
-        */
-        div[data-testid="stVerticalBlock"]:has(> .element-container .horizontal-marker) {
-            display: flex;
-            flex-direction: row !important;
-            flex-wrap: wrap;
-            /* gap: 0.5rem; */
-            align-items: baseline;
-        }
-        /* Buttons and their parent container all have a width of 704px, which we need to override */
-        div[data-testid="stVerticalBlock"]:has(> .element-container .horizontal-marker) div {
-            / * width: max-content !important; */
-            width: calc({ratio_pcnt}% - 1rem) !important;
-            flex: 1 1 calc({ratio_pcnt}% - 1rem) !important;
-            min-width: calc({ratio_pcnt}% - 1rem) !important;
-            margin-top: auto;  /* fix equivalent of vertical_alignment="bottom" */
-        }
-        /* Just an example of how you would style buttons, if desired */
-        /*
-        div[data-testid="stVerticalBlock"]:has(> .element-container .horizontal-marker) button {
-            border-color: green;
-        }
-        */
-    </style>
-    """
-    # replace the actual ratio_pcnt in the html
-    horizontal_style = horizontal_style.replace("{ratio_pcnt}", str(ratio_pcnt))
-
-    # apply the style and yield the horizontal marker
-    st.markdown(horizontal_style, unsafe_allow_html=True)
-    with st.container():
-        st.markdown('<span class="hide-element horizontal-marker"></span>',
-                    unsafe_allow_html=True)
-        yield
-
-
 def main():
     """Main for word pair match."""
     logger.debug(f"call: start Word Match mini-app {'-'*50}")
@@ -827,7 +756,7 @@ def main():
         # ToDo: restore miss metric in col3 when flex layout available
         # col1, col2, col3 = st.columns(3, vertical_alignment="bottom")
         col1, col2 = st.columns(2, vertical_alignment="bottom")
-        fix_mobile_columns()
+        fix_mobile_columns()  # ToDo: remove, note that this mobile fix limits all st.columns to 2
         with col1:
             # run the st_countdown timer and read the seconds remaining
             # hide the running man as this can be distracting when updated every countdown tick
@@ -850,6 +779,7 @@ def main():
             st.metric(label=ICON_HIT+"Hit", value=st.session_state.word_pair_match)
         # disable display of miss metric in col3 as 3 cols disabled because of streamlit mobile display limitations
         # ToDo: restore miss metric in col3 when flex layout available
+        # with col3:
         #     # display miss metric
         #     st.metric(label=ICON_MISS+"Miss", value=st.session_state.word_pair_mismatch)
 
@@ -880,8 +810,6 @@ def main():
 
             # generate a pair of left and right buttons for each row
             # the button's 'on_click' callback function handles the matching logic
-            # with st_columns_horizontal_fix_mobile(n=2):  # Temp: remove
-            #     st.button(  # btn_left, ToDo: restore - was with btn_left.button  # Temp: remove
             btn_left.button(
                 words_left_page[row],
                 use_container_width=True,
@@ -891,8 +819,7 @@ def main():
                       words_left_page, row],
                 type=st.session_state.btn_colour[(row, LEFT)],
                 disabled=st.session_state.btn_disabled[(row, LEFT)])
-            # st.button(  # btn_right, ToDo: restore - was with btn_right.button  # Temp: remove
-            btn_right.button(  # btn_right, ToDo: restore - was with btn_right.button
+            btn_right.button(
                 words_right_page_shuffled[row],
                 use_container_width=True, key=f'key_{row},{RIGHT}',
                 on_click=on_select,
