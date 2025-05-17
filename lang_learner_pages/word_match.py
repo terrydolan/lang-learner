@@ -988,7 +988,7 @@ def main():
                     st.stop()
 
             # give the user the option to try again or see the latest scores
-            opt_col1, opt_col2 = st.columns(2, gap="small")
+            opt_col1, opt_col2 = st.columns(2, gap="small", vertical_alignment="bottom")
             with opt_col1:
                 if st.button('Click to try again!', icon=":material/replay:"):
                     # start again
@@ -999,10 +999,10 @@ def main():
                     st.rerun()  # make it happen!
 
             with opt_col2:
-                if st.button("Click to see latest scores", icon=":material/scoreboard:"):
+                if st.button("Click to see scores", icon=":material/scoreboard:"):
                     # go to scores
-                    logger.debug("user selected 'Click to see latest scores'")
-                    st.switch_page("pages/scores.py")
+                    logger.debug("user selected 'Click to see scores'")
+                    st.switch_page("lang_learner_pages/scores.py")
 
             # give the user the option to review misses (if any)
             if st.session_state.word_pair_mismatch > 0:

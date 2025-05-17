@@ -12,7 +12,7 @@ import pandas as pd
 import streamlit as st
 from pathlib import Path
 from datetime import datetime
-from pages.scores import MINIAPPS_WITH_SCORES
+from lang_learner_pages.scores import MINIAPPS_WITH_SCORES
 from utils.gsheet_utils import save_score_to_gsheet
 
 # setup logger

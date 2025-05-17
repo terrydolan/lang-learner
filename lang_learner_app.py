@@ -20,14 +20,14 @@ Use lazy % formatting in logging functions (...) [logging-fstring-interpolation]
 import logging
 import streamlit as st
 from pathlib import Path
-from pages.account import login, change_nickname, remove_user, logout
+from lang_learner_pages.account import login, change_nickname, remove_user, logout
 
 # set streamlit page config, must be the first streamlit command
 st.set_page_config(page_title="Language Learner App",
                    layout='wide',
                    page_icon=":material/language:")
 # setup logger
-# logger level can be set from set_log_level group in the streamlit secrets.toml
+# the logger level can be set from set_log_level group in the streamlit secrets.toml
 logger = logging.getLogger(__name__)
 logging.basicConfig(format='%(asctime)s %(levelname)s %(module)s %(funcName)s %(message)s')
 # preferred format for print statements for DEBUG datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -68,7 +68,7 @@ def main():
             logger.debug(f"{st.session_state.source_language=}, "
                          f"{st.session_state.target_language=}")
 
-        # define app pages
+        # define lang_learner_app pages
         # account pages
         change_nickname_page = st.Page(
             change_nickname,
@@ -82,32 +82,32 @@ def main():
 
         # admin pages
         admin_enter_scores = st.Page(
-            "pages/admin_enter_scores.py",
+            "lang_learner_pages/admin_enter_scores.py",
             title="Manual Entry of Scores", icon=":material/build_circle:")
         admin_display_nicknames = st.Page(
-            "pages/admin_display_nicknames.py",
+            "lang_learner_pages/admin_display_nicknames.py",
             title="Display Nicknames Gsheet", icon=":material/build_circle:")
         admin_display_scores = st.Page(
-            "pages/admin_display_scores.py",
+            "lang_learner_pages/admin_display_scores.py",
             title="Display Scores Gsheet", icon=":material/build_circle:")
 
         # in-development pages
         gender_match_page = st.Page(
-            "pages/gender_match.py",
+            "lang_learner_pages/gender_match.py",
             title="Gender Match", icon=":material/group:")
         prototype_page = st.Page(
-            "pages/prototype.py",
+            "lang_learner_pages/prototype.py",
             title="Prototype", icon=":material/group:")
 
         # mini-app pages
         word_match_page = st.Page(
-            "pages/word_match.py",
+            "lang_learner_pages/word_match.py",
             title="Word Match", icon=":material/match_word:", default=True)
         scores_page = st.Page(
-            "pages/scores.py",
+            "lang_learner_pages/scores.py",
             title="Scores", icon=":material/scoreboard:")
 
-        # configure app pages
+        # configure lang_learner_app pages
         if st.session_state.user_id in st.secrets.admin.admin_user_ids:
             # special page navigation with admin
             pg = st.navigation(
