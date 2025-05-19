@@ -735,7 +735,7 @@ def st_columns_horizontal_fix_mobile(n=2):
             display: flex;
             flex-direction: row !important;
             flex-wrap: wrap;
-            /* gap: 0.5rem; */
+            gap: 0.5rem;
             align-items: baseline;
         }
         /* Buttons and their parent container all have a width of 704px, which we need to override */
