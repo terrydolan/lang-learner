@@ -30,8 +30,9 @@ buttons ready for selection again
 - The user can also review their misses
 
 ToDo:
-- remove fix_mobile_columns() and its 2 column limitation, also re-introduce display of
-miss metric as this requires 3 columns; dependent on streamlit release of Flex layout #10895
+- remove fixes to display of columns on mobile device: fix_mobile_columns() and its 2 column
+limitation and use of st_columns_horizontal_fix_mobile(n=3) for 3 columns; dependent on streamlit
+release of Flex layout #10895
 https://github.com/streamlit/streamlit/issues/10895
 
 Nice-to-have:
@@ -494,7 +495,7 @@ def on_select(btn_value, btn_row, btn_col, btn_words, btn_words_index):
                 st.session_state.word_pair_match += 1
                 st.session_state.word_pair_matches_per_page += 1
                 st.session_state.btn_count = 0
-                st.toast("Hit", icon=ICON_HIT)  # alt: icon=":material/thumb_up:"
+                st.toast("Hit", icon=ICON_HIT)  # disable as can be a distraction on mobile devices
             else:
                 # mis-match
 
@@ -508,7 +509,7 @@ def on_select(btn_value, btn_row, btn_col, btn_words, btn_words_index):
 
                 st.session_state.word_pair_mismatch += 1
                 st.session_state.btn_count = 0
-                st.toast("Miss", icon=ICON_MISS)
+                # st.toast("Miss", icon=ICON_MISS)  # disable as can be a distraction on mobile devices
 
 
 def friendly_secs(total_seconds):
@@ -828,34 +829,27 @@ def main():
     if st.session_state.started:
         # display progress
 
-        # prepare columns to display progress
-        # the metrics will be in cols 1 and 2; the countdown timer will be in col4
-        # disable display of 3 cols because of streamlit mobile display limitations
-        # ToDo: restore miss metric in col3 when flex layout available
+        # hide the running man as this can be distracting when updated on every click
+        st.markdown(HIDE_STREAMLIT_STATUS, unsafe_allow_html=True)
+
+        # prepare 3 columns to display progress
+        # the countdown timer will be in col1, the metrics will be in cols 2 and 3
+        # ToDo: restore use of st.columns (or equivalent) when streamlit flex layout available
         # col1, col2, col3 = st.columns(3, vertical_alignment="bottom")
-        # col1, col2 = st.columns(2, vertical_alignment="bottom")
-        fix_mobile_columns()  # ToDo: remove, note that this mobile fix limits all st.columns to 2
         with st_columns_horizontal_fix_mobile(n=3):
-        # with col1:
-            # run the st_countdown timer and read the seconds remaining
-
-            # hide the running man as this can be distracting when updated every countdown tick
-            # st.markdown(HIDE_STREAMLIT_STATUS, unsafe_allow_html=True)
-
-            # set the start value for the countdown and run
+            # start the countdown timer (col1)
+            # and read the seconds remaining (when complete)
             if not DEBUG_NO_COUNTDOWN:
                 # run the countdown timer
                 seconds_remaining = st_countdown(st.session_state.countdown_from)
             else:
                 # countdown timer disabled (debug mode)
                 seconds_remaining = 10000  # set an arbirary high number
-        # with col2:
-            # display hit metric
+
+            # display hit metric (col2)
             st.metric(label=ICON_HIT + "Hit", value=st.session_state.word_pair_match)
-        # disable display of miss metric in col3 as 3 cols disabled because of streamlit mobile display limitations
-        # ToDo: restore miss metric in col3 when flex layout available
-        # with col3:
-            # display miss metric
+
+            # display miss metric (col3)
             st.metric(label=ICON_MISS+"Miss", value=st.session_state.word_pair_mismatch)
 
         logger.debug(f"progress metrics: {seconds_remaining=}, {st.session_state.word_pair_match=}, "
@@ -878,7 +872,11 @@ def main():
 
         # dynamically generate the button grid of word pairs to match and wait
         # the user to select a word pair
+
+        # prepare columns for the buttons
         btn_left, btn_right = st.columns(COL_TOT, gap="small", vertical_alignment="bottom")
+        fix_mobile_columns()  # ToDo: remove, note that this mobile fix limits all st.columns to 2
+
         logger.debug("display buttons and wait for user input...")
         for row in range(ROW_TOT):
             # logger.debug(f"main for loop: {row=}, {st.session_state.page_number=}")
