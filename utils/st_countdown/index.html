@@ -104,9 +104,6 @@ https://codepen.io/gulzaib/pen/PoKVmNw
                   "detail": {"counter": secs}
             });
 
-            // update Streamlit with the countdown timer's secs remaining and log
-            document.dispatchEvent(updateStreamlit);
-
             // change text colour as we get closer to end of countdown
             if (secs > 20 && secs <= 60) {
               countdownDisplay.style.color = "orange";
@@ -118,6 +115,7 @@ https://codepen.io/gulzaib/pen/PoKVmNw
                 countdownFrom--;
             }
             else {
+                document.dispatchEvent(updateStreamlit);  // tell Streamlit that counter at zero
                 countdownDisplay.style.color = "darkgray";
                 console.log("completed ticker: call clearInterval(ticker)");
                 clearInterval(ticker);

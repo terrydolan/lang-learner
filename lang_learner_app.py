@@ -4,7 +4,7 @@ Description: Main entry point for streamlit language learner app.
 
 Author: Terry Dolan
 Date Created: 31st March 2025
-Date Last Modified: 12th May 2025
+Date Last Modified: 19th May 2025
 
 ToDo:
 - Replace Google Sheets with simple cloud database (e.g. MongoDB) allowing insertion and
@@ -26,6 +26,7 @@ from lang_learner_pages.account import login, change_nickname, remove_user, logo
 st.set_page_config(page_title="Language Learner App",
                    layout='wide',
                    page_icon=":material/language:")
+
 # setup logger
 # the logger level can be set from set_log_level group in the streamlit secrets.toml
 logger = logging.getLogger(__name__)
@@ -109,7 +110,7 @@ def main():
 
         # configure lang_learner_app pages
         if st.session_state.user_id in st.secrets.admin.admin_user_ids:
-            # special page navigation with admin
+            # special page navigation with extras: Admin and In-development
             pg = st.navigation(
                 {
                     "Account": [change_nickname_page, remove_user_page, logout_page],

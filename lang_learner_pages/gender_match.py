@@ -5,6 +5,7 @@ Description: Contains logic for the Gender Match miniapp page.
 import logging
 import streamlit as st
 from pathlib import Path
+from utils.page_utils import save_page
 
 # setup logger
 logger = logging.getLogger(__name__)
@@ -18,6 +19,8 @@ def main():
       """Main for gender match."""
       st.subheader("Gender Match TBD")
       logger.debug(f"call: start Gender Match mini-app {'-'*50}")
+      # save page
+      _calling_page = save_page('scores')
 
 
 if __name__ == "__main__":

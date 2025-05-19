@@ -14,6 +14,7 @@ from pathlib import Path
 from datetime import datetime
 from lang_learner_pages.scores import MINIAPPS_WITH_SCORES
 from utils.gsheet_utils import save_score_to_gsheet
+from utils.page_utils import save_page
 
 # setup logger
 logger = logging.getLogger(__name__)
@@ -27,6 +28,8 @@ else:
 def main():
     logger.debug(f"call: started admin enter scores")
     st.header("Admin: Manual Entry of Scores for Testing")
+    # save page
+    _calling_page = save_page('scores')
 
     sel_score = st.number_input(
         label="Enter the simulated score to write to scores gsheet", min_value=0, max_value=100, value=50, step=5)

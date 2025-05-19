@@ -10,6 +10,7 @@ import streamlit as st
 import pandas as pd
 from pathlib import Path
 from utils.gsheet_utils import read_nicknames_as_df_from_gsheet, read_scores_as_df_from_gsheet
+from utils.page_utils import save_page
 
 # setup logger
 logger = logging.getLogger(__name__)
@@ -80,6 +81,8 @@ def highlight_row_with_this_user_nickname(row: pd.Series):
 def main():
     st.header("Scores")
     logger.debug(f"call: start scores miniapp")
+    # save page
+    _calling_page = save_page('scores')
 
     # create a dictionary to map from a miniapp friendly name to the miniapp name
     miniapp_map = {m.replace('_', ' ').title(): m for m in MINIAPPS_WITH_SCORES}

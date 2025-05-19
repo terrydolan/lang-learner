@@ -6,6 +6,7 @@ import logging
 import streamlit as st
 from pathlib import Path
 from utils.gsheet_utils import read_nicknames_as_df_from_gsheet
+from utils.page_utils import save_page
 
 # setup logger
 logger = logging.getLogger(__name__)
@@ -19,6 +20,8 @@ else:
 def main():
     logger.debug(f"call: started admin display nicknames")
     st.header("Admin: Display Nicknames gsheet")
+    # save page
+    _calling_page = save_page('scores')
 
     df_nicknames = read_nicknames_as_df_from_gsheet()
     logger.debug(f"display {df_nicknames=}")

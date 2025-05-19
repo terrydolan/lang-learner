@@ -25,8 +25,6 @@ secondary colour, if selected a second time (or another button in the same colum
 buttons ready for selection again
 - If all pairs are matched on the page then generate a new page of words and repeat
 - When the countdown timer reaches zero the matching is complete and all the buttons are disabled
-- The current countdown and page of words is 'frozen' on page switch, ready to be
-restarted on switch back
 - Finally the user's score is summarised and saved in the scores sheet
 - The user is given the option of trying again or jumping to the scores page
 - The user can also review their misses
@@ -35,9 +33,6 @@ ToDo:
 - remove fix_mobile_columns() and its 2 column limitation, also re-introduce display of
 miss metric as this requires 3 columns; dependent on streamlit release of Flex layout #10895
 https://github.com/streamlit/streamlit/issues/10895
-- monitor use of updated countdown_from on each call to st_countdown; this results
-in many messages sent to javascript (though only first render effects the timer
-unless the context is updated e.g. on page change)
 
 Nice-to-have:
 - set a temporary highlight colour or a glow when there is a successful or
@@ -57,6 +52,7 @@ from random import shuffle
 from pathlib import Path
 from utils.gsheet_utils import save_score_to_gsheet
 from utils.st_countdown import st_countdown
+from utils.page_utils import save_page
 from utils.gsheet_utils import read_scores_as_df_from_gsheet
 from data_tools.data_utils.data_schema import load_report_data_df_from_feather
 
@@ -724,6 +720,15 @@ def main():
     # initialise other session state variables
     initialise_session_state()
 
+    # save page and check calling page
+    calling_page = save_page('word_match')
+    if calling_page and calling_page != "word_match":
+        # called from other page so reset session_state
+        logger.debug("calling page not this page, reset session state and increase page number")
+        reset_session_state()
+        # increase session_page_number to ensure next set of words is presented
+        st.session_state.session_page_number += 1
+
     # wait until the user clicks the start button
     if not st.session_state.started:
         # not started, warn the user about the countdown
@@ -759,6 +764,7 @@ def main():
         fix_mobile_columns()  # ToDo: remove, note that this mobile fix limits all st.columns to 2
         with col1:
             # run the st_countdown timer and read the seconds remaining
+
             # hide the running man as this can be distracting when updated every countdown tick
             st.markdown(HIDE_STREAMLIT_STATUS, unsafe_allow_html=True)
 
@@ -769,11 +775,6 @@ def main():
             else:
                 # countdown timer disabled (debug mode)
                 seconds_remaining = 10000  # set an arbirary high number
-
-            # set the new value for the countdown, this is used if there is a page change (and
-            # ignored if the st_countdown iframe javascript context is not restarted)
-            # ToDo: monitor impact on performance
-            st.session_state.countdown_from = seconds_remaining
         with col2:
             # display hit metric
             st.metric(label=ICON_HIT+"Hit", value=st.session_state.word_pair_match)
@@ -938,7 +939,7 @@ def main():
                 # user has misses
                 if st.toggle(f"{ICON_MISS} Review your misses"):
                     # display the misses
-                    logger.debug("user activated toggle switch 'Review your misses '")
+                    logger.debug("user activated toggle switch 'Review your misses'")
                     display_misses(source_lang=source_language,
                                    target_lang=target_language,
                                    word_pair_mismatch=st.session_state.word_pair_mismatch,

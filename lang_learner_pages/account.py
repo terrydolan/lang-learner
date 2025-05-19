@@ -6,6 +6,7 @@ change_nickname, remove_user and logout.
 import logging
 import streamlit as st
 from pathlib import Path
+from utils.page_utils import save_page
 from utils.gsheet_utils import (load_nicknames_dict_from_gsheet, save_nickname_to_gsheet,
                                 read_nicknames_as_df_from_gsheet, save_nicknames_df_to_gsheet)
 
@@ -106,6 +107,9 @@ def login():
 def logout():
     """Log user out and clear session state."""
     logger.debug(f"call: logout()")
+    # save page
+    _calling_page = save_page('logout')
+
     st.write("Log out from the app, all your information will be saved")
     if st.button("Log out"):
         for key in list(st.session_state.keys()):
@@ -174,6 +178,9 @@ def ui_change_unique_nickname(current_nickname, nicknames_dict):
 def change_nickname():
     """Change user's existing nickname in the nicknames gsheet."""
     logger.debug(f"call: change_nickname()")
+    # save page
+    _calling_page = save_page('change_nickname')
+
     # refresh the nicknames_dict with existing nicknames
     st.session_state.nicknames_dict = load_nicknames_dict_from_gsheet()
 
@@ -203,6 +210,9 @@ def change_nickname():
 def remove_user():
     """Remove user from nicknames and log user out."""
     logger.debug(f"call: remove_user()")
+    # save page
+    _calling_page = save_page('remove_user')
+
     st.info(f"You are logged in as: {st.session_state.user_nickname} ({st.session_state.user_id})")
     st.write("Remove your user / nickname from the app and logout")
     if st.button("Remove"):

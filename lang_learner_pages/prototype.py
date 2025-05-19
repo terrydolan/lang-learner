@@ -6,6 +6,7 @@ import logging
 import streamlit as st
 from pathlib import Path
 from contextlib import contextmanager
+from utils.page_utils import save_page
 
 # setup logger
 logger = logging.getLogger(__name__)
@@ -141,6 +142,8 @@ def main():
     """Main for prototype."""
     st.header("Prototype")
     logger.debug(f"call: start Prototype mini-app {'-'*50}")
+    # save page
+    _calling_page = save_page('scores')
 
     # prototype display of buttons on mobile
     st.write("Aim: support two horizontal button on mobile devices")
@@ -158,7 +161,6 @@ def main():
             st.button(f"Fifteen chars l{i}", use_container_width=True)
         with col2:
             st.button(f"Fifteen chars r{i}", use_container_width=True)
-
 
     st.write("---")
     # custom CSS
