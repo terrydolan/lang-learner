@@ -73,7 +73,7 @@ RIGHT = 1  # right column has index=1
 ICON_HIT = "🟢"  # indicates a correct word pair match (hit)
 ICON_MISS = "🔴"  # indicates an incorrect word pair match (miss)
 MINIAPP_WORD_MATCH = "word_match"  # name of this miniapp in Scores Google sheet
-MAX_WORD_LEN_FOR_MOBILE = 15  # max word length for mobile to avoid button wrap on small displays
+MAX_WORD_LEN_FOR_MOBILE = 14  # max word length for mobile to avoid button wrap on small displays
 DEBUG_SHOW_STATS = False  # True if progress stats should not be shown (normal is False)
 DEBUG_NO_LOG_SCORES = False  # True if scores should not be logged to scores google sheet (normal is False)
 DEBUG_NO_COUNTDOWN = False  # True if countdown is not to run (normal is False)
@@ -698,10 +698,9 @@ def main():
     """Main for word pair match."""
     logger.debug(f"call: start Word Match mini-app {'-'*50}")
 
-    # st.header("Word Match")
-    source_language = st.session_state.source_language  # selected source language
-    target_language = st.session_state.target_language  # selected target language
-    st.subheader(f"Match the {target_language} and {source_language} words")
+    # set the source and target languages
+    source_language = st.session_state.source_language
+    target_language = st.session_state.target_language
 
     # get the list of all the word pairs, shuffled, for the selected source and target language
     if "word_pairs_shuffled" not in st.session_state:
@@ -720,7 +719,7 @@ def main():
     # initialise other session state variables
     initialise_session_state()
 
-    # save page and check calling page
+    # save current page and check the calling page
     calling_page = save_page('word_match')
     if calling_page and calling_page != "word_match":
         # called from other page so reset session_state
@@ -731,6 +730,9 @@ def main():
 
     # wait until the user clicks the start button
     if not st.session_state.started:
+        # show subheader
+        st.subheader(f"Match the {target_language} and {source_language} words")
+
         # not started, warn the user about the countdown
         if not DEBUG_NO_COUNTDOWN:
             st.warning(f"You have {friendly_secs(COUNTDOWN_FROM)} from the button click, good luck!",
