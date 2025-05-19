@@ -495,7 +495,7 @@ def on_select(btn_value, btn_row, btn_col, btn_words, btn_words_index):
                 st.session_state.word_pair_match += 1
                 st.session_state.word_pair_matches_per_page += 1
                 st.session_state.btn_count = 0
-                st.toast("Hit", icon=ICON_HIT)  # disable as can be a distraction on mobile devices
+                # st.toast("Hit", icon=ICON_HIT)  # disable as can be a distraction on mobile devices
             else:
                 # mis-match
 
