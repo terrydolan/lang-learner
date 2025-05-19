@@ -50,6 +50,7 @@ import utils.config as config
 from dataclasses import dataclass
 from random import shuffle
 from pathlib import Path
+from contextlib import contextmanager
 from utils.gsheet_utils import save_score_to_gsheet
 from utils.st_countdown import st_countdown
 from utils.page_utils import save_page
@@ -73,7 +74,7 @@ RIGHT = 1  # right column has index=1
 ICON_HIT = "🟢"  # indicates a correct word pair match (hit)
 ICON_MISS = "🔴"  # indicates an incorrect word pair match (miss)
 MINIAPP_WORD_MATCH = "word_match"  # name of this miniapp in Scores Google sheet
-MAX_WORD_LEN_FOR_MOBILE = 14  # max word length for mobile to avoid button wrap on small displays
+MAX_WORD_LEN_FOR_MOBILE = 13  # max word length for mobile to avoid button wrap on small displays
 DEBUG_SHOW_STATS = False  # True if progress stats should not be shown (normal is False)
 DEBUG_NO_LOG_SCORES = False  # True if scores should not be logged to scores google sheet (normal is False)
 DEBUG_NO_COUNTDOWN = False  # True if countdown is not to run (normal is False)
@@ -85,7 +86,7 @@ HIDE_STREAMLIT_STATUS = """
     <style>
         div[data-testid="stStatusWidget"] {
         visibility: hidden;
-        
+
         height: 0%;
         position: fixed;
     }
@@ -100,6 +101,7 @@ RESTORE_STREAMLIT_STATUS = """
     }
     </style>
 """
+
 
 # ------------------------------------------------------------------------------
 # classes
@@ -139,7 +141,7 @@ class ClickedButton:
         if self.col not in [0, 1]:
             raise ValueError("Invalid value for 'col'. Expected 0 or 1.")
         if self.row not in range(ROW_TOT):
-            raise ValueError(f"Invalid value for 'row'. Expected value from 0 to {ROW_TOT-1}")
+            raise ValueError(f"Invalid value for 'row'. Expected value from 0 to {ROW_TOT - 1}")
         self.is_on_left = True if self.col == LEFT else False  # True if button is on left
         self.is_on_right = True if self.col == RIGHT else False  # True if button is on right
 
@@ -234,10 +236,11 @@ class ClickedButton:
         miss_dict = {
             'miss_lword': left_btn.val, 'miss_rword': right_btn.val,
             'correct_lword': correct_lword, 'correct_rword': correct_rword
-            }
+        }
 
         logger.debug(f"return: {miss_dict=}")
         return miss_dict
+
 
 # ------------------------------------------------------------------------------
 # functions
@@ -273,16 +276,16 @@ def get_shuffled_word_pairs(source_language, target_language, max_word_len=None)
 
     # select nouns
     word_pairs_nouns_list = dfrpt_all[(
-        (dfrpt_all['is_source_noun'] == True) & (dfrpt_all['is_ok_to_display'] == True) &
-        ((dfrpt_all.source_noun.str.len() <= max_word_len) &
-         (dfrpt_all.target_phrase_short.str.len() <= max_word_len))
-        )][['target_phrase_short', 'source_noun']].sample(frac=1).values.tolist()
+            (dfrpt_all['is_source_noun'] == True) & (dfrpt_all['is_ok_to_display'] == True) &
+            ((dfrpt_all.source_noun.str.len() <= max_word_len) &
+             (dfrpt_all.target_phrase_short.str.len() <= max_word_len))
+    )][['target_phrase_short', 'source_noun']].sample(frac=1).values.tolist()
     # select others
     word_pairs_others_list = dfrpt_all[(
-        (dfrpt_all['is_source_noun'] == False) & (dfrpt_all['is_ok_to_display'] == True) &
-        ((dfrpt_all.source_phrase.str.len() <= max_word_len) &
-         (dfrpt_all.target_phrase_short.str.len() <= max_word_len))
-        )][['target_phrase_short', 'source_phrase']].sample(frac=1).values.tolist()
+            (dfrpt_all['is_source_noun'] == False) & (dfrpt_all['is_ok_to_display'] == True) &
+            ((dfrpt_all.source_phrase.str.len() <= max_word_len) &
+             (dfrpt_all.target_phrase_short.str.len() <= max_word_len))
+    )][['target_phrase_short', 'source_phrase']].sample(frac=1).values.tolist()
     # combine nouns and others
     word_pairs = word_pairs_nouns_list + word_pairs_others_list
 
@@ -489,7 +492,7 @@ def on_select(btn_value, btn_row, btn_col, btn_words, btn_words_index):
                 st.session_state.btn2.toggle_button_disable()
 
                 st.session_state.word_pair_match += 1
-                st.session_state.word_pair_matches_per_page +=1
+                st.session_state.word_pair_matches_per_page += 1
                 st.session_state.btn_count = 0
                 st.toast("Hit", icon=ICON_HIT)  # alt: icon=":material/thumb_up:"
             else:
@@ -665,7 +668,7 @@ def get_high_score(user_id, miniapp):
 
     # get the user's best score
     if [user_id, miniapp] in df_scores[(df_scores.User_id == user_id) &
-                                       (df_scores.Miniapp == miniapp)]\
+                                       (df_scores.Miniapp == miniapp)] \
             [['User_id', 'Miniapp']].values.tolist():
         high_score = df_scores[(df_scores.User_id == user_id) &
                                (df_scores.Miniapp == miniapp)].Score.max()
@@ -694,9 +697,77 @@ def fix_mobile_columns():
     </style>''', unsafe_allow_html=True)
 
 
+@contextmanager
+def st_columns_horizontal_fix_mobile(n=2):
+    """ Define n flex columns for mobile.
+
+    Inputs:
+    n: int, number of columns (defaults to 2)
+
+    Addresses issue on mobile where mobile solution for st.columns does not support two (or three)
+    buttons side-by-side horizontally, even though display is wide enough.
+
+    Streamlit have fix for this on the way: Flex layout #10895
+
+    ToDo: replace st_columns_horizontal_fix_mobile() when flex container available with horizontal support.
+    Based on:
+    https://gist.github.com/ddorn/decf8f21421728b02b447589e7ec7235
+
+    """
+    logger.debug(f"call: st_columns_horizontal_fix_mobile({n=})")
+    assert n > 0, f"Number of columns must be >0, given {n=}"
+    ratio_pcnt = f"{100/n:.3f}"
+    logger.debug(f"{ratio_pcnt=}")
+
+    # define style to n flex cols for mobile
+    # note that {ratio_pcnt} must be substitued with the actual value
+    horizontal_style = """
+    <style class="hide-element">
+        /* Hides the style container and removes the extra spacing */
+        .element-container:has(.hide-element) {
+            display: none;
+        }
+        /*
+            The selector for >.element-container is necessary to avoid selecting the whole
+            body of the streamlit app, which is also a stVerticalBlock.
+        */
+        div[data-testid="stVerticalBlock"]:has(> .element-container .horizontal-marker) {
+            display: flex;
+            flex-direction: row !important;
+            flex-wrap: wrap;
+            /* gap: 0.5rem; */
+            align-items: baseline;
+        }
+        /* Buttons and their parent container all have a width of 704px, which we need to override */
+        div[data-testid="stVerticalBlock"]:has(> .element-container .horizontal-marker) div {
+            / * width: max-content !important; */
+            width: calc({ratio_pcnt}% - 1rem) !important;
+            flex: 1 1 calc({ratio_pcnt}% - 1rem) !important;
+            min-width: calc({ratio_pcnt}% - 1rem) !important;
+            margin-top: auto;  /* fix equivalent of vertical_alignment="bottom" */
+        }
+        /* Just an example of how you would style buttons, if desired */
+        /*
+        div[data-testid="stVerticalBlock"]:has(> .element-container .horizontal-marker) button {
+            border-color: green;
+        }
+        */
+    </style>
+    """
+    # replace the actual ratio_pcnt in the html
+    horizontal_style = horizontal_style.replace("{ratio_pcnt}", str(ratio_pcnt))
+
+    # apply the style and yield the horizontal marker
+    st.markdown(horizontal_style, unsafe_allow_html=True)
+    with st.container():
+        st.markdown('<span class="hide-element horizontal-marker"></span>',
+                    unsafe_allow_html=True)
+        yield
+
+
 def main():
     """Main for word pair match."""
-    logger.debug(f"call: start Word Match mini-app {'-'*50}")
+    logger.debug(f"call: start Word Match mini-app {'-' * 50}")
 
     # set the source and target languages
     source_language = st.session_state.source_language
@@ -748,7 +819,7 @@ def main():
             button_start_label = "Click to start (debug mode)"
 
         logger.debug("wait for start button!")
-        if st.button(button_start_label, icon=":material/timer:",):
+        if st.button(button_start_label, icon=":material/timer:", ):
             # start!
             logger.debug("start button clicked, session started!")
             st.session_state.started = True
@@ -762,13 +833,14 @@ def main():
         # disable display of 3 cols because of streamlit mobile display limitations
         # ToDo: restore miss metric in col3 when flex layout available
         # col1, col2, col3 = st.columns(3, vertical_alignment="bottom")
-        col1, col2 = st.columns(2, vertical_alignment="bottom")
+        # col1, col2 = st.columns(2, vertical_alignment="bottom")
         fix_mobile_columns()  # ToDo: remove, note that this mobile fix limits all st.columns to 2
-        with col1:
+        with st_columns_horizontal_fix_mobile(n=3):
+        # with col1:
             # run the st_countdown timer and read the seconds remaining
 
             # hide the running man as this can be distracting when updated every countdown tick
-            st.markdown(HIDE_STREAMLIT_STATUS, unsafe_allow_html=True)
+            # st.markdown(HIDE_STREAMLIT_STATUS, unsafe_allow_html=True)
 
             # set the start value for the countdown and run
             if not DEBUG_NO_COUNTDOWN:
@@ -777,14 +849,14 @@ def main():
             else:
                 # countdown timer disabled (debug mode)
                 seconds_remaining = 10000  # set an arbirary high number
-        with col2:
+        # with col2:
             # display hit metric
-            st.metric(label=ICON_HIT+"Hit", value=st.session_state.word_pair_match)
+            st.metric(label=ICON_HIT + "Hit", value=st.session_state.word_pair_match)
         # disable display of miss metric in col3 as 3 cols disabled because of streamlit mobile display limitations
         # ToDo: restore miss metric in col3 when flex layout available
         # with col3:
-        #     # display miss metric
-        #     st.metric(label=ICON_MISS+"Miss", value=st.session_state.word_pair_mismatch)
+            # display miss metric
+            st.metric(label=ICON_MISS+"Miss", value=st.session_state.word_pair_mismatch)
 
         logger.debug(f"progress metrics: {seconds_remaining=}, {st.session_state.word_pair_match=}, "
                      f"{st.session_state.word_pair_mismatch=}")
@@ -931,7 +1003,7 @@ def main():
                     st.rerun()  # make it happen!
 
             with opt_col2:
-                if st.button("Click to see scores", icon=":material/scoreboard:"):
+                if st.button("Go to *Scores* page", icon=":material/scoreboard:"):
                     # go to scores
                     logger.debug("user selected 'Click to see scores'")
                     st.switch_page("lang_learner_pages/scores.py")
