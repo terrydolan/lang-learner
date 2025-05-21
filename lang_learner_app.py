@@ -21,6 +21,8 @@ import logging
 import streamlit as st
 from pathlib import Path
 from lang_learner_pages.account import login, change_nickname, remove_user, logout
+from utils.config import lang_pair_to_all_words
+from data_tools.data_utils.data_schema import load_report_data_df_from_feather
 
 # set streamlit page config, must be the first streamlit command
 st.set_page_config(page_title="Language Learner App",
@@ -49,8 +51,34 @@ def sel_lang_pair():
     # initially pair is fixed to English and French so simply return these
     source_lang = "French"
     target_lang = "English"
+
     logger.debug(f"return: {source_lang=}, {target_lang=}")
     return source_lang, target_lang
+
+
+def get_lang_df(source_language, target_language):
+    """Return words dataframe for given source and target languages.
+
+    The words dataframe is the output from the data_tools process pipleline.
+    It contains all the source and target language word pairs after the data has been cleansed
+    and the translation has been checked.
+
+    Inputs:
+    source_language: str, source language e.g. French
+    target_language: str, target language e.g. English
+
+    Return:
+    df: pd.DataFrame, translation report dataframe for given source and target language word pairs
+    """
+    logger.debug(f"call: get_lang_df({source_language=}, {target_language=})")
+
+    # load all words translation report feather file into a dataframe
+    words_file = lang_pair_to_all_words[(source_language, target_language)]
+    logger.debug(f"{words_file=}")
+    df = load_report_data_df_from_feather(words_file)
+
+    logger.debug(f"return: df, total of {len(df)} items loaded")
+    return df
 
 
 def main():
@@ -63,11 +91,14 @@ def main():
     if "login_complete" in st.session_state:
         # login complete (user authenticated and nickname set)
 
-        # select source and target language pair
+        # select source and target language pair and save to session state
         if "source_language" not in st.session_state and "target_language" not in st.session_state:
             st.session_state.source_language, st.session_state.target_language = sel_lang_pair()
-            logger.debug(f"{st.session_state.source_language=}, "
-                         f"{st.session_state.target_language=}")
+
+        # get words dataframe for given sourec and target language and save to session state
+        if "df_words" not in st.session_state:
+            st.session_state.df_words = get_lang_df(source_language=st.session_state.source_language,
+                                                    target_language=st.session_state.target_language)
 
         # define lang_learner_app pages
         # account pages
@@ -91,6 +122,9 @@ def main():
         admin_display_scores = st.Page(
             "lang_learner_pages/admin_display_scores.py",
             title="Display Scores Gsheet", icon=":material/build_circle:")
+        search_page = st.Page(
+            "lang_learner_pages/search.py",
+            title="Search", icon=":material/search:")
 
         # in-development pages
         gender_match_page = st.Page(
@@ -116,7 +150,7 @@ def main():
                     "Account": [change_nickname_page, remove_user_page, logout_page],
                     "Admin": [admin_enter_scores, admin_display_nicknames, admin_display_scores],
                     "In-development": [gender_match_page, prototype_page],
-                    "Mini-apps": [word_match_page, scores_page]
+                    "Mini-apps": [word_match_page, scores_page, search_page]
                 }
             )
         else:
@@ -124,7 +158,7 @@ def main():
             pg = st.navigation(
                 {
                     "Account": [change_nickname_page, remove_user_page, logout_page],
-                    "Mini-apps": [word_match_page, scores_page]
+                    "Mini-apps": [word_match_page, scores_page, search_page]
                 }
             )
 

@@ -3,9 +3,10 @@ Module: word_match.py
 Description: Contains logic for the Word Match miniapp page.
 
 Outline Design:
-- Parse the cleansed language dataframe to obtain the source and target languages and to return a
-list of shuffled word pairs; the dataframe is prepared by the data tools
-- Initially the target language is English and the source language is French
+= Pre-requisites: The source and target languages and the associated words dataframe (prepared by the
+data tools) are saved to session state by the land_learner_app
+- Parse the words dataframe for the selected source and target languages and return a list of shuffled
+word pairs
 - The user clicks the start button to start the countdown timer
 - Display the time remaining in seconds, together with a count of the hits and misses
 - A hit is a successful word match, a miss is an unsuccessful word match
@@ -47,7 +48,6 @@ import logging
 import os
 import pandas as pd
 import streamlit as st
-import utils.config as config
 from dataclasses import dataclass
 from random import shuffle
 from pathlib import Path
@@ -56,7 +56,6 @@ from utils.gsheet_utils import save_score_to_gsheet
 from utils.st_countdown import st_countdown
 from utils.page_utils import save_page
 from utils.gsheet_utils import read_scores_as_df_from_gsheet
-from data_tools.data_utils.data_schema import load_report_data_df_from_feather
 
 # setup logger
 logger = logging.getLogger(__name__)
@@ -248,11 +247,10 @@ class ClickedButton:
 # ------------------------------------------------------------------------------
 
 
-def get_shuffled_word_pairs(source_language, target_language, max_word_len=None):
+def get_shuffled_word_pairs(df_words, max_word_len=None):
     """Return shuffled word pairs as list of lists for the given source and target languages.
     Inputs:
-    source_language: str, source language e.g. French
-    target_language: str, target language e.g. English
+    df_words: pd.DataFrame, translation report dataframe for given source and target language word pairs
     max_word_len: int, maximum word length for returned word pairs (optional)
 
     Return:
@@ -260,12 +258,7 @@ def get_shuffled_word_pairs(source_language, target_language, max_word_len=None)
     words [word_target, word_source] e.g.
         word_pairs = [['man', 'homme', ['woman', 'femme'], ...]
     """
-    logger.debug(f"call: get_shuffled_word_pairs({source_language=}, {target_language=}, {max_word_len=})")
-
-    # load the French English all words translation report feather file into a pandas dataframe
-    word_match_all_words_file = config.lang_pair_to_all_words[(source_language, target_language)]
-    logger.debug(f"{word_match_all_words_file=}")
-    dfrpt_all = load_report_data_df_from_feather(word_match_all_words_file)
+    logger.debug(f"call: get_shuffled_word_pairs(df_words, {max_word_len=})")
 
     # create a shuffled list of target words mapped to source words,
     # the target language (e.g. English) is left, source language (e.g. French) is right
@@ -276,16 +269,16 @@ def get_shuffled_word_pairs(source_language, target_language, max_word_len=None)
         max_word_len = float('inf')  # set to infinity i.e. allow all values
 
     # select nouns
-    word_pairs_nouns_list = dfrpt_all[(
-            (dfrpt_all['is_source_noun'] == True) & (dfrpt_all['is_ok_to_display'] == True) &
-            ((dfrpt_all.source_noun.str.len() <= max_word_len) &
-             (dfrpt_all.target_phrase_short.str.len() <= max_word_len))
+    word_pairs_nouns_list = df_words[(
+            (df_words['is_source_noun'] == True) & (df_words['is_ok_to_display'] == True) &
+            ((df_words.source_noun.str.len() <= max_word_len) &
+             (df_words.target_phrase_short.str.len() <= max_word_len))
     )][['target_phrase_short', 'source_noun']].sample(frac=1).values.tolist()
     # select others
-    word_pairs_others_list = dfrpt_all[(
-            (dfrpt_all['is_source_noun'] == False) & (dfrpt_all['is_ok_to_display'] == True) &
-            ((dfrpt_all.source_phrase.str.len() <= max_word_len) &
-             (dfrpt_all.target_phrase_short.str.len() <= max_word_len))
+    word_pairs_others_list = df_words[(
+            (df_words['is_source_noun'] == False) & (df_words['is_ok_to_display'] == True) &
+            ((df_words.source_phrase.str.len() <= max_word_len) &
+             (df_words.target_phrase_short.str.len() <= max_word_len))
     )][['target_phrase_short', 'source_phrase']].sample(frac=1).values.tolist()
     # combine nouns and others
     word_pairs = word_pairs_nouns_list + word_pairs_others_list
@@ -777,7 +770,8 @@ def main():
     # get the list of all the word pairs, shuffled, for the selected source and target language
     if "word_pairs_shuffled" not in st.session_state:
         st.session_state.word_pairs_shuffled = get_shuffled_word_pairs(
-            source_language, target_language, max_word_len=MAX_WORD_LEN_FOR_MOBILE)
+            df_words=st.session_state.df_words,
+            max_word_len=MAX_WORD_LEN_FOR_MOBILE)
 
     # get user's high score for word match
     if "high_score" not in st.session_state:
