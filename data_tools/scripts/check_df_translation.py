@@ -261,11 +261,14 @@ def main(language_feather_filepath='language_words.fea',
         print(f"Translation and Language check report saved to: {output_filepath}")
 
         # Load the dataframe back from feather and re-validate schema
-        _dfv = load_report_data_df_from_feather(output_filepath)
+        dfv = load_report_data_df_from_feather(output_filepath)
         print(f"Language data successfully loaded and schema validated from: "
               f"{output_filepath}")
 
-        print(f"Processed {idx} phrases")
+        # Report on number of items that need review
+        items_tot = len(dfv)
+        items_to_review = dfv[(dfv.is_ok_to_display != True)].source_phrase.count()
+        print(f"Processed {items_tot} items, {items_to_review} need review")
 
     except Exception as e:
         print(f"Error saving dataframe as feather file: {e}")

@@ -2,7 +2,7 @@
 # Author: @TerryDolan
 # Version: 1, containing ~900 words and phrases
 # Status: Published
-# Last Updated: 9th May 2025
+# Last Updated: 23rd May 2025
 #
 >French: English
 à: to, at, in # ignore translation error
@@ -23,12 +23,12 @@ ajouter: to add e.g. il ajoute du sel: he is adding some osalt
 album (m): album
 alcool (m): alcohol
 alimentaire: food (relating to food or eating or diet) # ignore translation error
-allemagne: germany
+allemagne (f): Germany
 allergie: allergy
 allergique: allergic
 allumer: to light, switch on, light up, put on
 alors: so, then
-ami, Amie: friend
+ami, amie: friend
 amiable: friendly, sociable, amicable
 amicale: friendly, amicable
 amoureux, amoureuse: in love
@@ -103,7 +103,7 @@ bonbon (m): sweet, candy
 bondé, bondée: crowded, busy
 botte (f): boot
 boulangerie (f): bakery
-bout (m): end, usually of something physical (of street, nose, table, queue, list)
+bout (m): end, tip, bit (of street, nose, table, queue, list)
 bouteille (f): bottle
 bracelet (m): bracelet
 bras (m): arm
@@ -119,6 +119,7 @@ camion (m): truck
 campagne (f): countryside, campaign e.g. une campagne de marketing: a marketing campaign
 camping (m): camping
 canapé (m): couch
+canard (m): duck
 capitale (f): capital
 carotte (f): carrot
 carré, carrée: square
@@ -129,7 +130,7 @@ cassé, cassée: broken, bent, cracked
 casser: to break
 cathédrale (f): cathedral
 ce, cette: this, that (sometimes these e.g. ce sont; used before être, devoir and pouvoir)
-ceci, Cela/ça: this or that (when followed by verb other than être…; ça is spoken version of cela)
+ceci, cela/ça: this or that (when followed by verb other than être…; ça is spoken version of cela)
 ceinture (f): belt
 célèbre: famous
 célibataire: single, bachelor, single woman
@@ -170,7 +171,7 @@ chose (f): thing
 chouette: great, neat, nice (informal, adverb) # ignore translation error
 chouette (f): owl
 ciel (m): sky
-ciné (m): cinema, abbreviation
+ciné (m): cinema (informal)
 cinéma (m): cinema, movie theatre # ignore translation error
 citron (m): lemon
 clair, claire: light, clear, fair e.g. bleu clair: light blue
@@ -189,7 +190,7 @@ colline (f): hill
 commander: to order
 comme: like, as
 commencer: to start (usually followed by à if verb)
-compagnie (f): company, gathering e.g. amimal de companie: pet
+compagnie (f): company, gathering
 comprendre: to understand
 compte (m): account (bank)
 concert (m): concert
@@ -202,7 +203,7 @@ conseiller: to advise (followed by de if verb follows)
 contact (m): contact
 continent (m): continent
 conversation (f): conversation
-copain, Copine: friend, boyfriend/girlfriend
+copain, copine: friend, boyfriend/girlfriend
 corps (m): body
 costume (m): suit
 coton (m): cotton e.g. son pantalon sont en coton: his pants are cotton
@@ -229,9 +230,9 @@ cuillère à soupe: tablespoon
 cuir (m): leather
 cuisine (f): kitchen
 cuisiner: to cook
-cuisinier, cuisinière: cook
+cuisinier, cuisinière: cook (noun)
 d’accord: all right, ok
-dangereux, Dangereuse: dangerous
+dangereux, dangereuse: dangerous
 danser: to dance
 danseur, danseuse: dancer
 début (m): beginning
@@ -239,7 +240,7 @@ déçus: disappointed
 degré: degree e.g. deux degrés Celsius
 dehors: outside, out
 déjà: already
-déjeuner (m): lunch, have lunch
+déjeuner (m): lunch; to have lunch e.g. petit déjeuner: breakfast
 demander: to ask for
 démarrer: to start, start up, move off (usually a vehicle)
 dépêche-toi, dépêchez-vous: hurry up
@@ -248,7 +249,7 @@ dépenser: to spend
 depuis: since, for e.g. je nagé depuis une heure: I am swimming for an hour (and still swimming)
 dernier, dernière: last
 descendre: to come down, go down, descend, climb down
-désolé, Désolée: sorry
+désolé, désolée: sorry
 dessert (m): dessert
 dessin (m): drawing
 dessiner: to draw
@@ -259,7 +260,7 @@ devenir: to become
 devoir (m): duty (noun); to owe, have to, must, owe to (verb, indicates obligation or duty - used in personal obligation; whereas falloir more general)
 différence: difference
 différent, différente: different
-dîner (m): dinner, have dinner, dine
+dîner (m): dinner; to have dinner, dine (evening meal)
 directeur, directrice: director
 discuter: to discuss
 disponible: available
@@ -304,7 +305,7 @@ entre: between
 entreprise (f): company, business
 entrer: to enter, come in
 enveloppe (f): envelope
-envie (f): wish, want, desire, urge, craving; envy
+envie (f): envy, desire, wish, urge, craving
 envier: to envy
 environ: about, approximately
 envoyer: to send
@@ -323,6 +324,8 @@ estomac (m): stomach
 éteindre: to turn off
 éternuement (m): sneeze
 éternuer: to sneeze
+étoile (f): star
+étoilé, étoilée: starry
 être: to be
 être là: to be there, be here e.g. je suis là: I am here
 étudier: to study (past participle: étudié)
@@ -353,7 +356,7 @@ foncé: dark e.g. bleu foncé: dark blue
 forêt (f): forest
 forme (f): shape
 formulaire (m): form
-fou, Folle: crazy, wild
+fou, folle: crazy, wild
 four (m): oven
 fourchette (f): fork
 fragile: fragile (adjective)
@@ -370,6 +373,7 @@ gant (m): glove
 gare (f): train station
 gare-toi ici: park here # ignore translation error
 garer: to park
+gâteau (m): cake
 gazeuse: sparkling
 génial, géniale: great
 genou (m): knee
@@ -382,7 +386,7 @@ grammaire (f): grammar
 gramme (m): gram
 grand, grande: big, great, tall, large
 grand-parent: grandparent (plural: grands-parents)
-grandir: to grow, grow up, magnify, become bigger, gain weight (opposite of maigrir)
+grandir: to grow, grow up, magnify, gain weight (opposite of maigrir)
 gratuit, gratuite: free, no cost
 grignoter: to snack, nibble
 gris (m): grey # ignore translation error
@@ -392,7 +396,7 @@ groupe (m): band
 guerre (f): war
 guide (m): guidebook # ignore translation error
 guitare (f): guitar
-habitude (f) : habit
+habitude (f): habit
 hall (m): hall, lobby, foyer
 handball (m): handball
 haut: up, high
@@ -405,7 +409,7 @@ histoire (f): history
 hiver (m): winter
 homme (m): man
 honte: shame
-hôpital (m), hôpitaux: hospital
+hôpital (m): hospital
 horaire (m): timetable, schedule (noun); hourly (adjective)
 horloge (f): clock
 hôtel (m): hotel
@@ -470,7 +474,7 @@ leur, leurs: their, them e.g. c’est leur sac alors je leur ai donné le sac: i
 librairie (f): bookshop, book store # ignore translation error
 libre: free, no restriction
 lien (m): link e.g. for a website
-lieu (m), lieux: place
+lieu (m): place
 ligne (f): line e.g. une ligne de metro
 lit (m): bed
 litre (m): litre # ignore translation error
@@ -481,13 +485,13 @@ long, longue: long
 longtemps: a long time
 louer: to rent
 loup (m): wolf
-lui: him, to hin, her, to her, it, to it (indirect)
+lui: him, to him, her, to her, it, to it (indirect)
 lycée (m): high school
 machine (f): machine
 magasin (m): shop, store
 magazine (m): magazine
 magnifique: wonderful, magnificent
-maigrir: to become thinner/smaller, lose weight (opposite of grandir)
+maigrir: to lose weight (opposite of grandir)
 maillot (m): jersey, vest
 maillot de bain: swimsuit
 main (f): hand # ignore translation error
@@ -508,7 +512,7 @@ marre: fed up
 marron: brown
 matière (f): subject, matter
 médicament (m): medicine, medication
-meilleur, Meilleure: better, best (usually with noun, comparative bon e.g. le meilleur: the best)
+meilleur, meilleure: better, best (usually with noun, comparative bon e.g. le meilleur: the best)
 mélanger: to mix
 membre (m): member
 même: same, even
@@ -537,7 +541,7 @@ monde (m): world
 mondial: international, global, world, worldwide
 monnaie (f): currency, cash, change (coins)
 montagne (f): mountain
-montre (f): Watch
+montre (f): watch
 montrer: to show
 monument (m): monument
 morte (f): death (noun); dead (adjective)
@@ -577,7 +581,7 @@ offrir: to offer, give (something) e.g. Il lui offre un cadeau: he is giving her
 oignon (m): onion
 oiseau (m): bird
 omelette (f): omelette
-on: we
+on: we, you, one, someone
 opéra (m): opera house
 or (m): gold
 ordinateur (m): computer
@@ -724,6 +728,7 @@ reçevoir: to receive, have over (e.g. friends for dinner)
 recyclage (m): recycling
 réfrigérateur (m): refrigerator, fridge
 regarder: to look
+rembourser: to repay, refund, pay back
 remercier: to thank
 remplir: to fill up, fill, fill out
 rencard (m): date
@@ -738,7 +743,7 @@ répondre: to reply to, respond, answer
 réponse (f): response, answer
 reportage (m): report, story, reporting
 responsable: responsible
-ressembler à: to look like
+ressembler: to look like e.g. elle ne ressemble pas à sa sœur: she doesn’t look like her sister.
 restaurant (m): restaurant
 rester: to stay
 resto (m): restaurant (informal)
@@ -749,6 +754,7 @@ retrouver: to meet up with, find
 réunion (f): meeting
 rêve (m): dream
 revenir: to come back
+réverbère (m): street lamp # ignore translation error
 riche: rich (masuline and feminine; mpl: les riches, fpl: les richesses)
 rideau (m): curtain
 rigoler: to laugh
@@ -758,12 +764,13 @@ robe (f): dress
 rompre: to break up
 roue (f): wheel
 route (f): road, route, way, journey
+royaume-uni (m): United Kingdom # ignore translation error
 rue (f): street
 rugby (m): rugby
 russe: Russian
 s'appeler: to be called
 s’intéresser: to take an interest in
-s’occuper de: to take care of
+s’occuper: to take care of
 sac (m): bag
 sac à dos: backpack
 saison (f): season
@@ -778,7 +785,7 @@ saucisse (f): sausage
 sauf: except
 savoir: to know facts, info or skills (to know how to do something)
 scooter (m): scooter, motorised
-se Asseoir: to sit down (order e.g. asseyez-vous, assieds-toi)
+se asseoir: to sit down (order e.g. asseyez-vous, assieds-toi)
 se battre: to fight, battle, struggle
 se coucher: to go to bed, set
 se dépêcher: to hurry
@@ -791,7 +798,7 @@ se reposer: to rest
 se retourner: to turn around # ignore translation error
 se réveiller: to wake up
 se sentir: to feel
-se souvenir + de: to remember
+se souvenir: to remember e.g. je ne me souviens pas de son adresse: I can’t remember his address
 seconde (f): second e.g. a second in time # ignore translation error
 secrétaire: secretary (can be masculine and feminine)
 seigle (m): rye
@@ -817,6 +824,7 @@ soif (f): thirst
 soin (m): care
 sol (m): ground, floor
 soleil (m): sun
+son, sa, ses: his, her # ignore translation error
 sortir: to go out
 soudain, soudaine: sudden, suddenly
 souhaiter: to wish
@@ -844,9 +852,8 @@ sushi (m): sushi e.g. les sushis est un plat japonais: sushi is a japanese dish
 sweat-shirt (m): sweatshirt
 sympa: nice
 t-shirt (m): T-shirt
-ta: your (adjective, feminine)
 table (f): table
-tableau (m), tableaux: painting
+tableau (m): painting
 taille (f): size, height
 tante (f): aunt
 tapis (m): rug, carpet
@@ -869,9 +876,9 @@ timbre (m): stamp
 timide: shy, timid
 toit (m): roof
 tomate (f): tomato
-ton: your (adjective, masculine)
-tort: wrong
-tot: early
+ton, ta, tes: your (adjective)
+tort (m): wrong
+tôt: early
 toujours: always, still
 tour (f): tower # ignore translation error
 tour (m): tour, excursion e.g. un tour à vélo: a bike-ride # ignore translation error

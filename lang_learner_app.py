@@ -45,6 +45,7 @@ else:
 # ------------------------------------------------------------------------------
 
 
+@st.cache_data  # cache language selection as fixed to English and French for now
 def sel_lang_pair():
     """Return selected source and target language."""
     logger.debug("call: sel_lang_pair()")
@@ -56,6 +57,7 @@ def sel_lang_pair():
     return source_lang, target_lang
 
 
+@st.cache_data(show_spinner="Reading app data...")  # cache read of language df as this is expensive
 def get_lang_df(source_language, target_language):
     """Return words dataframe for given source and target languages.
 
