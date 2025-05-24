@@ -37,6 +37,10 @@ release of Flex layout #10895
 https://github.com/streamlit/streamlit/issues/10895
 
 Nice-to-have:
+- call get_shuffled_word_pairs() again if the current list of shuffled word pairs is exhausted by the user.
+At v1 of the word dataframe (fr_en_words_tlchk_v1.fea) with ~600 word pairs at MAX_WORD_LEN, this
+requires the user to achieve a score of ~60 ten times before a session restart to exhaust the list, making it
+possible but unlikely to be hit. And v2 of the word dataframe will add significantly more words.
 - set a temporary highlight colour or a glow when there is a successful or
 unsuccessful word match e.g. green for hit and red for miss
 - mis-matched words could be stored and used as a preference for future runs or as part of a
@@ -286,7 +290,12 @@ def get_shuffled_word_pairs(df_words, max_word_len=None):
     # shuffle in place
     shuffle(word_pairs)
 
-    logger.debug(f"return: shuffled word_pairs from df, total of {len(word_pairs)} pairs loaded")
+    # check number of word pairs
+    word_pairs_tot = len(word_pairs)
+    if word_pairs_tot <= 12*3:  # arbitrary, 3 goes of 12 pages
+        logger.warning(f"Total number of word pairs loaded is low and may be exhausted: {word_pairs_tot=}")
+
+    logger.debug(f"return: shuffled word_pairs from df, total of {word_pairs_tot} pairs loaded")
     lt = max((t for t, _s in word_pairs), key=len)
     ls = max((s for _t, s in word_pairs), key=len)
     logger.debug(f"longest target is '{lt}', length={len(lt)}")
@@ -326,7 +335,12 @@ def get_page_of_word_pairs(word_pairs, pg_start_index, pg_words_tot):
     # shuffle the rwords_page slice
     page_indices_shuffled = list(range(pg_words_tot))
     shuffle(page_indices_shuffled)
-    rwords_page_shuffled = [rwords_page[idx] for idx in page_indices_shuffled]
+    try:
+        rwords_page_shuffled = [rwords_page[idx] for idx in page_indices_shuffled]
+    except IndexError as e:
+        logger.error(f"Unexpected error, word list exhausted: error: '{e}'")
+        st.error(f"Unexpected error: word list exhausted, report to app admin")
+        st.stop()
 
     logger.debug(f"return: {lwords_page=}, {rwords_page=}, "
                  f"{rwords_page_shuffled=}, {page_indices_shuffled=}")
@@ -767,11 +781,25 @@ def main():
     source_language = st.session_state.source_language
     target_language = st.session_state.target_language
 
+    # determine max word length (admin can over-ride)
+    max_word_len = MAX_WORD_LEN_FOR_MOBILE  # default
+    if ("word_pairs_shuffled" not in st.session_state and
+            st.session_state.user_id in st.secrets.admin.admin_user_ids and
+            'word_match_max_word_len' in st.secrets.admin_overide):
+        # admin has over-ridden default
+        try:
+            if 'No limit' in st.secrets.admin_overide['word_match_max_word_len']:
+                max_word_len = None
+        except TypeError:
+            # value is an int
+            max_word_len = st.secrets.admin_overide['word_match_max_word_len']
+        logger.debug(f"Admin has set 'word_match_max_word_len' in admin_override in st.secrets, {max_word_len=}")
+
     # get the list of all the word pairs, shuffled, for the selected source and target language
     if "word_pairs_shuffled" not in st.session_state:
         st.session_state.word_pairs_shuffled = get_shuffled_word_pairs(
             df_words=st.session_state.df_words,
-            max_word_len=MAX_WORD_LEN_FOR_MOBILE)
+            max_word_len=max_word_len)
 
     # get user's high score for word match
     if "high_score" not in st.session_state:

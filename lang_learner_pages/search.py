@@ -55,7 +55,8 @@ def main():
     with st.container(border=True):
         # user decides on search string
         search_str = st.text_input(label=f"Enter search string for {what_lang}:",
-                                   placeholder="<Search string>")
+                                   placeholder="<Search string>",
+                                   help="Use the sidebar to change *what* is searched and the *type* of search.")
 
         # user decides when to search
         do_search = st.button(label="Search")
