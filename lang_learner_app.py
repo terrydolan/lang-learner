@@ -4,7 +4,7 @@ Description: Main entry point for streamlit language learner app.
 
 Author: Terry Dolan
 Date Created: 31st March 2025
-Date Last Modified: 19th May 2025
+Date Last Modified: 25th May 2025
 
 ToDo:
 - Replace Google Sheets with simple cloud database (e.g. MongoDB) allowing insertion and
@@ -26,8 +26,12 @@ from data_tools.data_utils.data_schema import load_report_data_df_from_feather
 
 # set streamlit page config, must be the first streamlit command
 st.set_page_config(page_title="Language Learner App",
-                   layout='wide',
-                   page_icon=":material/language:")
+                   layout="wide",
+                   page_icon=":material/language:",
+                   menu_items={
+                       'About':
+                           "[:material/home: Language Learner home page](https://github.com/terrydolan/lang-learner)"}
+                   )
 
 # setup logger
 # the logger level can be set from set_log_level group in the streamlit secrets.toml
@@ -124,9 +128,6 @@ def main():
         admin_display_scores = st.Page(
             "lang_learner_pages/admin_display_scores.py",
             title="Display Scores Gsheet", icon=":material/build_circle:")
-        search_page = st.Page(
-            "lang_learner_pages/search.py",
-            title="Search", icon=":material/search:")
 
         # in-development pages
         gender_match_page = st.Page(
@@ -140,9 +141,15 @@ def main():
         word_match_page = st.Page(
             "lang_learner_pages/word_match.py",
             title="Word Match", icon=":material/match_word:", default=True)
-        scores_page = st.Page(
-            "lang_learner_pages/scores.py",
-            title="Scores", icon=":material/scoreboard:")
+        top_scores_page = st.Page(
+            "lang_learner_pages/top_scores.py",
+            title="Top Scores", icon=":material/leaderboard:")
+        my_scores_page = st.Page(
+            "lang_learner_pages/my_scores.py",
+            title="My Scores", icon=":material/view_list:")
+        search_page = st.Page(
+            "lang_learner_pages/search.py",
+            title="Search", icon=":material/search:")
 
         # configure lang_learner_app pages
         if st.session_state.user_id in st.secrets.admin.admin_user_ids:
@@ -152,7 +159,7 @@ def main():
                     "Account": [change_nickname_page, remove_user_page, logout_page],
                     "Admin": [admin_enter_scores, admin_display_nicknames, admin_display_scores],
                     "In-development": [gender_match_page, prototype_page],
-                    "Mini-apps": [word_match_page, scores_page, search_page]
+                    "Mini-apps": [word_match_page, top_scores_page, my_scores_page, search_page]
                 }
             )
         else:
@@ -160,7 +167,7 @@ def main():
             pg = st.navigation(
                 {
                     "Account": [change_nickname_page, remove_user_page, logout_page],
-                    "Mini-apps": [word_match_page, scores_page, search_page]
+                    "Mini-apps": [word_match_page, top_scores_page, my_scores_page, search_page]
                 }
             )
 

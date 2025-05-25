@@ -1,6 +1,6 @@
 """
-Module: scores.py
-Description: Contains logic for the Scores miniapp page.
+Module: top_scores.py
+Description: Contains logic for the Top Scores miniapp page.
 
 ToDo:
 - add bold styling when (if) supported by st.dataframe in future st.release.
@@ -27,12 +27,12 @@ else:
     MINIAPPS_WITH_SCORES = ['word_match']
 
 
-# cache data for 1 minutes
+# cache data for 1 minute
 @st.cache_data(show_spinner="Reading app data and building the table...", ttl=60*1)
-def build_scores_table(miniapp):
-    """Return the sorted scores table (highest first) for the given miniapp
+def build_top_scores_table(miniapp):
+    """Return the sorted top scores table (highest first) for the given miniapp
     """
-    logger.debug(f"call: build_scores_table({miniapp=})")
+    logger.debug(f"call: build_top_scores_table({miniapp=})")
 
     # read the scores data into a dataframe
     df_scores = read_scores_as_df_from_gsheet()
@@ -42,12 +42,12 @@ def build_scores_table(miniapp):
     df_miniapp_scores = df_scores[(df_scores.Miniapp == miniapp)][["User_id", "Score", "Timestamp"]] \
         .sort_values(by=["Score", "Timestamp", "User_id"], ascending=(False, True, True), ignore_index=True)
 
-    # select each user's best score
+    # select each user's top score
     df_miniapp_scores = df_miniapp_scores.loc[df_miniapp_scores.groupby('User_id')['Score'].idxmax()] \
         .sort_values(by=["Score", "Timestamp", "User_id"], ascending=(False, True, True), ignore_index=True)
     logger.debug(f"{df_miniapp_scores=}")
 
-    # read the nicknames and join the best scores with the user nicknames so that
+    # read the nicknames and join the top scores with the user nicknames so that
     # the user-friendly nickname can be displayed instead of the user_id
     df_nicknames = read_nicknames_as_df_from_gsheet()
     logger.debug(f"{df_nicknames=}")
@@ -57,8 +57,8 @@ def build_scores_table(miniapp):
     # add Position to the table, starting at 1 to create a league table
     df_table.index += 1
     df_table = df_table.reset_index(names=['Position'])
-    # rename 'Score' column to 'Best Score'
-    df_table = df_table.rename(columns={"Score": "Best Score"})
+    # rename 'Score' column to 'Top Score'
+    df_table = df_table.rename(columns={"Score": "Top Score"})
 
     logger.debug(f"return: {df_table=}")
     return df_table
@@ -79,10 +79,10 @@ def highlight_row_with_this_user_nickname(row: pd.Series):
 
 
 def main():
-    st.header("Scores")
-    logger.debug(f"call: start scores miniapp")
+    st.header("Top Scores")
+    logger.debug(f"call: start top scores miniapp")
     # save page
-    _calling_page = save_page('scores')
+    _calling_page = save_page('top_scores')
 
     # create a dictionary to map from a miniapp friendly name to the miniapp name
     miniapp_map = {m.replace('_', ' ').title(): m for m in MINIAPPS_WITH_SCORES}
@@ -90,11 +90,11 @@ def main():
     # select the miniapp
     mini_app_friendly_names = list(miniapp_map.keys())
     selection = st.radio(label="Selected Mini-app", options=mini_app_friendly_names, horizontal=True)
-    st.info(f"Best score for {selection}")
-    logger.debug(f"user selected scores for {selection=}")
+    st.info(f"Top scores for {selection}")
+    logger.debug(f"user selected top scores for {selection=}")
 
-    # build the scores table (with nickname) for the selection
-    df_scores_table = build_scores_table(miniapp_map[selection])
+    # build the top scores table (with nickname) for the selection
+    df_scores_table = build_top_scores_table(miniapp_map[selection])
 
     # display the table
     if not df_scores_table.empty:

@@ -8,13 +8,21 @@ The app is designed to be language agnostic.
 Initially the app uses a single word file with the source and target 
 languages fixed at French and English.
 
+The miniapps and the account utilities are available from the sidebar. 
+
 The first miniapp is a simple word match challenge.
 
 ## Word Match
 Match as many English and French words as you can before the timer runs out.
 
-## Scores
-Check your scores to see how you compare to others.
+## Top Scores
+Check your top score and see how you compare to others.
+
+## My Scores
+Check all your scores.
+
+## Search
+Search the words.
 
 ## Language Dataset and Pipeline
 The app uses a hand-crafted list of paired French and English words and phrases.
@@ -27,7 +35,7 @@ The phrases will *not* be error free.
 ## Key Project Files
 The 'lang_learner_app.py' is the main python streamlit app implementation.
 
-The associated app pages are in the './pages' folder.
+The associated app pages are in the './lang_learner_pages' folder.
 
 The associated app utilities are in the './utils' folder.
 

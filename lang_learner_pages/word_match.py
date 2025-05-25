@@ -854,7 +854,7 @@ def main():
         # hide the running man as this can be distracting when updated on every click
         st.markdown(HIDE_STREAMLIT_STATUS, unsafe_allow_html=True)
 
-        # prepare 3 columns to display progress
+        # prepare 3 special columns to display progress (suitable for mobile display)
         # the countdown timer will be in col1, the metrics will be in cols 2 and 3
         # ToDo: restore use of st.columns (or equivalent) when streamlit flex layout available
         # col1, col2, col3 = st.columns(3, vertical_alignment="bottom")
@@ -984,7 +984,7 @@ def main():
                     st.info("You equaled your Word Match high score!", icon=":material/star_half:")
                     logger.debug("You equaled your Word Match high score!")
                 elif st.session_state.word_pair_match > st.session_state.high_score:
-                    st.info("You achieved a new Word Match high score! Check the *Scores* page "
+                    st.info("You achieved a new Word Match high score! Check the *Top Scores* page "
                             "to see your position in the table",
                             icon=":material/star:")
                     st.session_state.high_score = st.session_state.word_pair_match
@@ -1011,22 +1011,35 @@ def main():
                     st.error("unexpected error: this record already exists in the scores")
                     st.stop()
 
-            # give the user the option to try again or see the latest scores
+            # give the user the option to try again or see the latest top scores
             opt_col1, opt_col2 = st.columns(2, gap="small", vertical_alignment="bottom")
             with opt_col1:
-                if st.button('Click to try again!', icon=":material/replay:"):
+                if st.button('Try again!',
+                             help="Click to try *Word Match* again!",
+                             icon=":material/replay:"):
                     # start again
-                    logger.debug("user selected 'Click to try again!'")
+                    logger.debug("user selected 'Try again!'")
                     reset_session_state()
                     # increase session_page_number to ensure next set of words is presented
                     st.session_state.session_page_number += 1
                     st.rerun()  # make it happen!
 
             with opt_col2:
-                if st.button("Go to *Scores* page", icon=":material/scoreboard:"):
-                    # go to scores
-                    logger.debug("user selected 'Click to see scores'")
-                    st.switch_page("lang_learner_pages/scores.py")
+                if st.button("Top Scores",
+                             help="Click to go to the *Top Scores* page",
+                             icon=":material/leaderboard:"):
+                    # go to top scores
+                    logger.debug("user selected 'Top Scores'")
+                    st.switch_page("lang_learner_pages/top_scores.py")
+
+            # ToDo: Add option to go to My Scores when 3 cols supported on mobile
+            # # with opt_col3:
+            #     if st.button("My Scores",
+            #                  help="Click to go to the *My Scores* page"):
+            #                  # icon=":material/view_list:"):
+            #         # go to my scores
+            #         logger.debug("user selected 'My Scores'")
+            #         st.switch_page("lang_learner_pages/my_scores.py")
 
             # give the user the option to review misses (if any)
             if st.session_state.word_pair_mismatch > 0:

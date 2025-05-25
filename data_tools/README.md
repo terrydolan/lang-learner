@@ -1,8 +1,8 @@
 # Language Learner Data Tools
 
 ## Key Folders
-- *data_wip*: the 'work in progress' data folder; contains the starter
-file with the pairs of word phrases for the source and target languages 
+- *data_wip*: the 'work in progress' data folder; contains the .csv 
+file(s) with the pairs of word phrases for the source and target languages 
 and the associated dataframes produced by the data pipeline scripts. 
 - *scripts*: contains the scripts that manage the data pipeline.
 - *data_test*: contains test data files to check the data pipleline.
@@ -18,6 +18,8 @@ The dataframe output from the conversion identifies the source and target
 languages. 
 It also identifies if the source phrase is a noun and, if so, the 
 noun's gender.
+Note that *fr_en_words_v1.csv* is version 1 of the *csv* file containing the 
+list of *French* and *English* words.
 
 
 2. *check_lang_df_translation.py*: check translation of dataframe e.g.    
